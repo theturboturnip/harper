@@ -1,7 +1,7 @@
 import { ReactPortal, useMemo } from 'react';
 import useFrameCount from './useFrameCount';
 import { createPortal } from 'react-dom';
-import Highlight from './Highlight';
+import Highlighter from './Highlighter';
 import React from 'react';
 
 function getDocumentContainer(): Element | null {
@@ -61,7 +61,7 @@ export default function SidebarControl() {
 
 		return textChildren.map( ( n ) =>
 			createPortal(
-				<Highlight container={ documentContainer } target={ n } />,
+				<Highlighter container={ documentContainer } target={ n } />,
 				documentContainer
 			)
 		);

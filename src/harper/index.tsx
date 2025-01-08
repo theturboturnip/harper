@@ -2,6 +2,9 @@ import { registerPlugin } from '@wordpress/plugins';
 import { PluginSidebar, PluginSidebarMoreMenuItem } from '@wordpress/editor';
 import SidebarControl from './SidebarControl';
 
+import './index.css';
+import React from 'react';
+
 function Sidebar() {
 	return (
 		<>

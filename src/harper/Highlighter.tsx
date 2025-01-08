@@ -1,41 +1,33 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { LocalLinter, Lint, WorkerLinter } from 'harper.js';
-
-type Box = {
-	/** Horizontal position in pixels */
-	x: number;
-	/** Vertical position in pixels */
-	y: number;
-	/** Width in pixels */
-	width: number;
-	/** Height in pixels */
-	height: number;
-};
-
-type LintBox = Box & { lint: Lint }
+import { LocalLinter, Lint, WorkerLinter, Suggestion } from 'harper.js';
+import SuggestionControl from './SuggestionControl';
+import { LintBox } from './Box';
 
 let linter = new WorkerLinter();
 
-let lints = new Map<string, Lint[]>();
+let lints = new Map< string, Lint[] >();
 
-async function memoizedLint(text: string): Promise<Lint[]>{
-	if (lints.has(text)){
-		return Promise.resolve(lints.get(text)!);
+async function memoizedLint( text: string ): Promise< Lint[] > {
+	if ( lints.has( text ) ) {
+		return Promise.resolve( lints.get( text )! );
 	}
 
-	let newLints = await linter.lint(text);
-	lints.set(text, newLints);
+	let newLints = await linter.lint( text );
+	lints.set( text, newLints );
 
 	return newLints;
 }
 
 /** Get target boxes for a text node.
  * Each box represents a Harper lint in the Node. */
-async function getLintBoxesForNode( node: Node, container: Element ): Promise<LintBox[]> {
+async function getLintBoxesForNode(
+	node: Node,
+	container: Element
+): Promise< LintBox[] > {
 	let text = node.textContent ?? '';
 
-	let lints = await memoizedLint(text);
+	let lints = await memoizedLint( text );
 
 	let boxes: LintBox[] = [];
 
@@ -54,21 +46,25 @@ async function getLintBoxesForNode( node: Node, container: Element ): Promise<Li
 			y: targetRect.y - contRect.y,
 			width: targetRect.width,
 			height: targetRect.height,
-			lint
+			lint,
+			applySuggestion: (async (sug: Suggestion) => {
+				let fixed = await linter.applySuggestion(text, sug, span)
+				node.textContent = fixed;
+			})
 		} );
 	}
 
 	return boxes;
 }
 
-export default function Highlight( {
+export default function Highlighter( {
 	container,
 	target,
 }: {
 	container: Element;
 	target: Node;
 } ) {
-	const [ targetBoxes, setTargetBoxes ] = useState< Box[] >( [] );
+	const [ targetBoxes, setTargetBoxes ] = useState< LintBox[] >( [] );
 
 	useEffect( () => {
 		let running = true;
@@ -76,7 +72,7 @@ export default function Highlight( {
 		function onFrame( _timestep: DOMHighResTimeStamp ) {
 			//let contRect = container.getBoundingClientRect();
 
-			getLintBoxesForNode( target, container ).then(setTargetBoxes)
+			getLintBoxesForNode( target, container ).then( setTargetBoxes );
 
 			if ( running ) {
 				requestAnimationFrame( onFrame );
@@ -92,18 +88,8 @@ export default function Highlight( {
 
 	return (
 		<>
-			{ targetBoxes.map( ( { x, y, width, height } ) => (
-				<div
-					style={ {
-						position: 'absolute',
-						top: `${ y }px`,
-						left: ` ${ x }px`,
-						width: `${ width }px`,
-						height: `${ height }px`,
-						zIndex: -100,
-						borderBottom: '3px solid red',
-					} }
-				></div>
+			{ targetBoxes.map( ( b ) => (
+				<SuggestionControl lintBox={ b } />
 			) ) }
 		</>
 	);
