@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useState, useEffect } from 'react';
 import { LocalLinter, Lint, WorkerLinter, Suggestion } from 'harper.js';
 import SuggestionControl from './SuggestionControl';
@@ -47,10 +47,10 @@ async function getLintBoxesForNode(
 			width: targetRect.width,
 			height: targetRect.height,
 			lint,
-			applySuggestion: (async (sug: Suggestion) => {
-				let fixed = await linter.applySuggestion(text, sug, span)
+			applySuggestion: async ( sug: Suggestion ) => {
+				let fixed = await linter.applySuggestion( text, sug, span );
 				node.textContent = fixed;
-			})
+			},
 		} );
 	}
 
@@ -60,9 +60,13 @@ async function getLintBoxesForNode(
 export default function Highlighter( {
 	container,
 	target,
+	requestClosePopups,
+	registerCloseHandler,
 }: {
 	container: Element;
 	target: Node;
+	requestClosePopups: () => void;
+	registerCloseHandler: ( handler: () => void ) => void;
 } ) {
 	const [ targetBoxes, setTargetBoxes ] = useState< LintBox[] >( [] );
 
@@ -89,7 +93,11 @@ export default function Highlighter( {
 	return (
 		<>
 			{ targetBoxes.map( ( b ) => (
-				<SuggestionControl lintBox={ b } />
+				<SuggestionControl
+					lintBox={ b }
+					requestClosePopups={ requestClosePopups }
+					registerCloseHandler={registerCloseHandler}
+				/>
 			) ) }
 		</>
 	);

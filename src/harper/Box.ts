@@ -11,4 +11,7 @@ export type Box = {
 	height: number;
 };
 
-export type LintBox = Box & { lint: Lint, applySuggestion: (sug: Suggestion) => void };
+export type LintBox = Box & {
+	lint: Lint;
+	applySuggestion: ( sug: Suggestion ) => void;
+};

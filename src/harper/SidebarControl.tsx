@@ -1,4 +1,4 @@
-import { ReactPortal, useMemo } from 'react';
+import { ReactPortal, useCallback, useMemo, useRef } from 'react';
 import useFrameCount from './useFrameCount';
 import { createPortal } from 'react-dom';
 import Highlighter from './Highlighter';
@@ -52,6 +52,12 @@ export default function SidebarControl() {
 		[ documentContainer, frameCount ]
 	);
 
+	const closeHandlers = useRef( new Set< () => void >() );
+
+	let requestClosePopups = useCallback( () => {
+		closeHandlers.current.forEach( ( h ) => h() );
+	}, [] );
+
 	let highlights = targetNodes.flatMap( ( n ) => {
 		if ( ! documentContainer ) return [];
 
@@ -61,7 +67,11 @@ export default function SidebarControl() {
 
 		return textChildren.map( ( n ) =>
 			createPortal(
-				<Highlighter container={ documentContainer } target={ n } />,
+				<Highlighter container={ documentContainer } target={ n } requestClosePopups={requestClosePopups}
+					registerCloseHandler={ ( handler ) =>
+						closeHandlers.current.add( handler )
+					}
+				/>,
 				documentContainer
 			)
 		);

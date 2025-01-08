@@ -6,8 +6,7 @@ import React, {
 	useState,
 } from 'react';
 import { LintBox } from './Box';
-import { Suggestion, SuggestionKind } from 'harper.js';
-import { MouseEventHandler } from 'react';
+import { SuggestionKind } from 'harper.js';
 import useElementPosition from './useElementPosition';
 
 function suggestionText(
@@ -25,7 +24,15 @@ function suggestionText(
 }
 
 /** A control for an individual suggestion shown on the screen. */
-export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
+export default function SuggestionControl( {
+	lintBox,
+	requestClosePopups,
+	registerCloseHandler,
+}: {
+	lintBox: LintBox;
+	requestClosePopups: () => void;
+	registerCloseHandler: ( handler: () => void ) => void;
+} ) {
 	let { x, y, width, height, lint, applySuggestion } = lintBox;
 
 	let underlineRef = useRef< HTMLElement | null >( null );
@@ -35,6 +42,10 @@ export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
 	const [ showSuggestions, setShowSuggestions ] = useState( false );
 
 	useEffect( () => {
+		registerCloseHandler( () => setShowSuggestions( false ) );
+	}, [] );
+
+	useEffect( () => {
 		function mouseMove( e: MouseEvent ) {
 			if (
 				e.pageX > offsetX &&
@@ -42,7 +53,8 @@ export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
 				e.pageY > offsetY &&
 				e.pageY < offsetY + height
 			) {
-				setShowSuggestions( true );
+				requestClosePopups();
+				setShowSuggestions( () => true );
 			}
 		}
 
@@ -54,6 +66,7 @@ export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
 				e.pageY > offsetY + height
 			) {
 				setShowSuggestions( false );
+				requestClosePopups();
 			}
 		}
 
@@ -78,7 +91,9 @@ export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
 				mouseUp
 			);
 		};
-	}, [ offsetX, offsetY ] );
+	}, [ offsetX, offsetY, requestClosePopups ] );
+
+
 
 	return (
 		<>
@@ -107,7 +122,7 @@ export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
 					{ lint.message() }
 
 					{ suggestions.map( ( sug ) => (
-						<button onClick={() => applySuggestion(sug) }>
+						<button onClick={ () => applySuggestion( sug ) }>
 							{ suggestionText(
 								sug.kind(),
 								lint.get_problem_text(),
