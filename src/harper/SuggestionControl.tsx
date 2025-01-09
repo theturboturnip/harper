@@ -17,13 +17,15 @@ function suggestionText(
 	if ( kind == SuggestionKind.Remove ) {
 		return `Remove "${ problemText }"`;
 	} else if ( kind == SuggestionKind.Replace ) {
-		return `Replace "${ problemText }" with "${ replacementText }"`;
+		return `Replace with "${ replacementText }"`;
 	} else {
-		return `Insert "${ replacementText }" after ${ problemText }`;
+		return `Insert "${ replacementText }"`;
 	}
 }
 
-/** A control for an individual suggestion shown on the screen. */
+/** A control for an individual suggestion shown on the screen.
+ * This includes both the underline to be shown, and the control that appears when you hover over it.
+ * */
 export default function SuggestionControl( {
 	lintBox,
 	requestClosePopups,
@@ -36,7 +38,6 @@ export default function SuggestionControl( {
 	let { x, y, width, height, lint, applySuggestion } = lintBox;
 
 	let underlineRef = useRef< HTMLElement | null >( null );
-	let [ offsetX, offsetY ] = useElementPosition( underlineRef );
 
 	let suggestions = useMemo( () => lint.suggestions(), [ lint ] );
 	const [ showSuggestions, setShowSuggestions ] = useState( false );
@@ -47,11 +48,15 @@ export default function SuggestionControl( {
 
 	useEffect( () => {
 		function mouseMove( e: MouseEvent ) {
+			if (underlineRef.current == null){return};
+
+			let rect = underlineRef.current.getBoundingClientRect();
+
 			if (
-				e.pageX > offsetX &&
-				e.pageX < offsetX + width &&
-				e.pageY > offsetY &&
-				e.pageY < offsetY + height
+				e.clientX > rect.x &&
+				e.clientX < rect.x + width &&
+				e.clientY > rect.y &&
+				e.clientY < rect.y + height
 			) {
 				requestClosePopups();
 				setShowSuggestions( () => true );
@@ -59,13 +64,15 @@ export default function SuggestionControl( {
 		}
 
 		function mouseUp( e: MouseEvent ) {
+			let offsetX = underlineRef.current?.offsetLeft ?? 0;
+			let offsetY = underlineRef.current?.offsetLeft ?? 0;
+
 			if (
-				e.pageX < offsetX &&
-				e.pageX > offsetX + width &&
-				e.pageY < offsetY &&
+				e.pageX < offsetX ||
+				e.pageX > offsetX + width ||
+				e.pageY < offsetY ||
 				e.pageY > offsetY + height
 			) {
-				setShowSuggestions( false );
 				requestClosePopups();
 			}
 		}
@@ -91,14 +98,13 @@ export default function SuggestionControl( {
 				mouseUp
 			);
 		};
-	}, [ offsetX, offsetY, requestClosePopups ] );
-
-
+	}, [ requestClosePopups, underlineRef.current ] );
 
 	return (
 		<>
 			<div
 				ref={ underlineRef }
+				className={ `harper-underline-${ lint.lint_kind() }` }
 				style={ {
 					position: 'absolute',
 					top: `${ y }px`,
@@ -106,7 +112,6 @@ export default function SuggestionControl( {
 					width: `${ width }px`,
 					height: `${ height }px`,
 					zIndex: -100,
-					borderBottom: '3px solid red',
 				} }
 			></div>
 			{ showSuggestions && (
@@ -119,7 +124,11 @@ export default function SuggestionControl( {
 						zIndex: 100,
 					} }
 				>
-					{ lint.message() }
+					<h1 className={ `harper-underline-${ lint.lint_kind() }` }>
+						{ lint.lint_kind() }
+					</h1>
+
+					<p>{ lint.message() }</p>
 
 					{ suggestions.map( ( sug ) => (
 						<button onClick={ () => applySuggestion( sug ) }>

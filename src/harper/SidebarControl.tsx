@@ -15,8 +15,8 @@ function getDocumentContainer(): Element | null {
 }
 
 /** Turn a NodeList into a normal JavaScript array. */
-function extractFromNodeList( list: NodeList ): Node[] {
-	let elements: Node[] = [];
+function extractFromNodeList< T extends Node >( list: NodeListOf< T > ): T[] {
+	let elements: T[] = [];
 
 	for ( let i = 0; i < list.length; i++ ) {
 		let item = list[ i ];
@@ -58,24 +58,21 @@ export default function SidebarControl() {
 		closeHandlers.current.forEach( ( h ) => h() );
 	}, [] );
 
-	let highlights = targetNodes.flatMap( ( n ) => {
-		if ( ! documentContainer ) return [];
-
-		let textChildren = extractFromNodeList( n.childNodes ).filter(
-			( n ) => n.nodeType === 3
-		);
-
-		return textChildren.map( ( n ) =>
-			createPortal(
-				<Highlighter container={ documentContainer } target={ n } requestClosePopups={requestClosePopups}
+	let highlights =
+		documentContainer &&
+		targetNodes.map( ( n ) => {
+			return createPortal(
+				<Highlighter
+					container={ documentContainer }
+					target={ n }
+					requestClosePopups={ requestClosePopups }
 					registerCloseHandler={ ( handler ) =>
 						closeHandlers.current.add( handler )
 					}
 				/>,
 				documentContainer
-			)
-		);
-	} );
+			);
+		} );
 
 	return (
 		<>

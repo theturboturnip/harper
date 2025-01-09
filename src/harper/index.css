@@ -1,26 +1,71 @@
 .harper-popover {
 	border-radius: 4px;
 	border: 1px solid black;
-	padding: 4px;
+	padding: 8px;
 	background-color: white;
 	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
-	font-size: 16px;
-	font-weight: 750;
 	filter: drop-shadow(5px 5px 5px #CCCCCC);
 	width: 200px;
-
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	align-items: left;
 	text-align: left;
 }
 
+.harper-popover > h1 {
+	font-size: 16px;
+	font-weight: 750;
+}
+
+.harper-popover > p {
+	font-size: 14px;
+	font-weight: 500;
+}
+
 .harper-popover > button {
-	width: 95%;
-	padding: 4px;
-	margin-top: 4px;
-	border-radius: 4px;
+	width: 100%;
+	padding: 8px;
+	margin-top: 8px;
+	border-radius: 8px;
 	border: 0px;
-	background-color: black;
-	color: white;
+}
+
+.harper-popover > button:hover {
+	filter: brightness(0.9);
+}
+
+.harper-underline-Spelling {
+  border-bottom: 4px solid #EE4266;
+}
+
+.harper-underline-Capitalization {
+  border-bottom: 4px solid #540D6E;
+}
+
+.harper-underline-Style {
+  border-bottom: 4px solid #FFD23F;
+}
+
+.harper-underline-Formatting {
+  border-bottom: 4px solid #540D6E;
+}
+
+.harper-underline-Repetition {
+  border-bottom: 4px solid #3BCEAC;
+}
+
+.harper-underline-Enhancement {
+  border-bottom: 4px solid #0EAD69;
+}
+
+.harper-underline-Readability {
+  border-bottom: 4px solid #0EAD69;
+}
+
+.harper-underline-WordChoice {
+  border-bottom: 4px solid #0EAD69;
+}
+
+.harper-underline-Miscellaneous {
+  border-bottom: 4px solid #3BCEAC;
 }
