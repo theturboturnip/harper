@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import { LocalLinter, Lint, WorkerLinter, Suggestion, Span } from 'harper.js';
 import SuggestionControl from './SuggestionControl';
 import { LintBox } from './Box';
+import {
+	extractFromNodeList,
+	flattenNodeChildren as leafNodes,
+} from './domUtils';
 
 let linter = new WorkerLinter();
 
@@ -21,7 +25,8 @@ async function memoizedLint( text: string ): Promise< Lint[] > {
 }
 
 function getRangeForTextSpan( target: Element, span: Span ): Range | null {
-	let children = target.childNodes;
+	let children = leafNodes( target );
+
 	let range = document.createRange();
 	let traversed = 0;
 
@@ -31,12 +36,12 @@ function getRangeForTextSpan( target: Element, span: Span ): Range | null {
 		let child = children[ i ];
 		let childText = child.textContent;
 
-		if ( traversed + childText?.length > span.start && ! startFound ) {
+		if ( traversed + childText.length > span.start && ! startFound ) {
 			range.setStart( child, span.start - traversed );
 			startFound = true;
 		}
 
-		if ( startFound && traversed + childText?.length > span.end ) {
+		if ( startFound && traversed + childText.length > span.end ) {
 			range.setEnd( child, span.end - traversed );
 			return range;
 		}
@@ -80,40 +85,22 @@ async function computeLintBoxes(
 			height: targetRect.height,
 			lint,
 			applySuggestion: async ( sug: Suggestion ) => {
+				console.log( clientId );
+
 				let fixed = await linter.applySuggestion( text, sug, span );
 
-				const { getBlocks } = select( 'core/block-editor' );
+				console.log( fixed );
+
 				const { selectBlock, updateBlockAttributes } =
 					dispatch( 'core/block-editor' );
 
-				const updateBlocks = ( attributes ) => {
-					selectBlock( clientId );
-					updateBlockAttributes( clientId, attributes );
-				};
-
-				updateBlocks( { content: fixed } );
+				selectBlock( clientId );
+				updateBlockAttributes( clientId, { content: fixed } );
 			},
 		} );
 	}
 
 	return boxes;
-}
-
-function locateBlock( clientId: string, blocks: any[] ): any {
-	let block = blocks.find( ( b ) => b.clientId == clientId );
-
-	if ( block ) return block;
-
-	for ( let block of blocks ) {
-		if ( block.innerBlocks ) {
-			let found = locateBlock( clientId, block.innerBlocks );
-			if ( found ) {
-				return found;
-			}
-		}
-	}
-
-	return null;
 }
 
 export default function Highlighter( {
@@ -133,8 +120,6 @@ export default function Highlighter( {
 		let running = true;
 
 		function onFrame( _timestep: DOMHighResTimeStamp ) {
-			//let contRect = container.getBoundingClientRect();
-
 			computeLintBoxes( target, container ).then( setTargetBoxes );
 
 			if ( running ) {

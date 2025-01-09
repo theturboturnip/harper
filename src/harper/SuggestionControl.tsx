@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { LintBox } from './Box';
 import { SuggestionKind } from 'harper.js';
-import useElementPosition from './useElementPosition';
 
 function suggestionText(
 	kind: SuggestionKind,
@@ -48,7 +47,9 @@ export default function SuggestionControl( {
 
 	useEffect( () => {
 		function mouseMove( e: MouseEvent ) {
-			if (underlineRef.current == null){return};
+			if ( underlineRef.current == null ) {
+				return;
+			}
 
 			let rect = underlineRef.current.getBoundingClientRect();
 
@@ -64,6 +65,10 @@ export default function SuggestionControl( {
 		}
 
 		function mouseUp( e: MouseEvent ) {
+			if ( e.target != this ) {
+				return;
+			}
+
 			let offsetX = underlineRef.current?.offsetLeft ?? 0;
 			let offsetY = underlineRef.current?.offsetLeft ?? 0;
 

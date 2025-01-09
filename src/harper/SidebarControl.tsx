@@ -1,5 +1,6 @@
 import { ReactPortal, useCallback, useMemo, useRef } from 'react';
 import useFrameCount from './useFrameCount';
+import { getNodesFromQuerySelector } from './domUtils';
 import { createPortal } from 'react-dom';
 import Highlighter from './Highlighter';
 import React from 'react';
@@ -12,22 +13,6 @@ function getDocumentContainer(): Element | null {
 		iframeDocument?.body ||
 		document.querySelector( '.edit-post-visual-editor > div' );
 	return container;
-}
-
-/** Turn a NodeList into a normal JavaScript array. */
-function extractFromNodeList< T extends Node >( list: NodeListOf< T > ): T[] {
-	let elements: T[] = [];
-
-	for ( let i = 0; i < list.length; i++ ) {
-		let item = list[ i ];
-		elements.push( item );
-	}
-
-	return elements;
-}
-
-function getNodesFromQuerySelector( element: Element, query: string ) {
-	return extractFromNodeList( element.querySelectorAll( query ) );
 }
 
 export default function SidebarControl() {
