@@ -37,16 +37,17 @@ export default function SuggestionControl( {
 	let { x, y, width, height, lint, applySuggestion } = lintBox;
 
 	let underlineRef = useRef< HTMLElement | null >( null );
+	let popoverRef = useRef< HTMLElement | null >( null );
 
 	let suggestions = useMemo( () => lint.suggestions(), [ lint ] );
-	const [ showSuggestions, setShowSuggestions ] = useState( false );
+	const [ showPopover, setShowPopover ] = useState( false );
 
 	useEffect( () => {
-		registerCloseHandler( () => setShowSuggestions( false ) );
+		registerCloseHandler( () => setShowPopover( () => false ) );
 	}, [] );
 
 	useEffect( () => {
-		function mouseMove( e: MouseEvent ) {
+		function mouseUp( e: MouseEvent ) {
 			if ( underlineRef.current == null ) {
 				return;
 			}
@@ -59,33 +60,11 @@ export default function SuggestionControl( {
 				e.clientY > rect.y &&
 				e.clientY < rect.y + height
 			) {
-				requestClosePopups();
-				setShowSuggestions( () => true );
+				setShowPopover( () => true );
+			} else {
+				setShowPopover( false );
 			}
 		}
-
-		function mouseUp( e: MouseEvent ) {
-			if ( e.target != this ) {
-				return;
-			}
-
-			let offsetX = underlineRef.current?.offsetLeft ?? 0;
-			let offsetY = underlineRef.current?.offsetLeft ?? 0;
-
-			if (
-				e.pageX < offsetX ||
-				e.pageX > offsetX + width ||
-				e.pageY < offsetY ||
-				e.pageY > offsetY + height
-			) {
-				requestClosePopups();
-			}
-		}
-
-		underlineRef.current?.parentElement?.addEventListener(
-			'mousemove',
-			mouseMove
-		);
 
 		underlineRef.current?.parentElement?.addEventListener(
 			'mouseup',
@@ -93,11 +72,6 @@ export default function SuggestionControl( {
 		);
 
 		return () => {
-			underlineRef.current?.parentElement?.removeEventListener(
-				'mousemove',
-				mouseMove
-			);
-
 			underlineRef.current?.parentElement?.removeEventListener(
 				'mouseup',
 				mouseUp
@@ -119,8 +93,9 @@ export default function SuggestionControl( {
 					zIndex: -100,
 				} }
 			></div>
-			{ showSuggestions && (
+			{ showPopover && (
 				<div
+					ref={ popoverRef }
 					className="harper-popover"
 					style={ {
 						position: 'absolute',

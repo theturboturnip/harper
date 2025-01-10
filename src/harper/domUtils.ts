@@ -1,4 +1,17 @@
 /** Turn a `NodeList` into a normal JavaScript array. */
+export function extractFromHTMLCollection(
+	collection: HTMLCollection
+): Element[] {
+	let elements: Element[] = [];
+
+	for ( let el of collection ) {
+		elements.push( el );
+	}
+
+	return elements;
+}
+
+/** Turn a `NodeList` into a normal JavaScript array. */
 export function extractFromNodeList< T extends Node >(
 	list: NodeListOf< T >
 ): T[] {
@@ -17,7 +30,7 @@ export function getNodesFromQuerySelector( element: Element, query: string ) {
 }
 
 /** Flatten a provided node, and it's children into a single array. */
-export function flattenNodeChildren( node: Node ): Node[] {
+export function leafNodes( node: Element ): Element[] {
 	let out = [];
 
 	let children = extractFromNodeList( node.childNodes );
@@ -27,7 +40,7 @@ export function flattenNodeChildren( node: Node ): Node[] {
 	}
 
 	for ( let child of children ) {
-		let sub = flattenNodeChildren( child );
+		let sub = leafNodes( child );
 		sub.forEach( ( v ) => out.push( v ) );
 	}
 
