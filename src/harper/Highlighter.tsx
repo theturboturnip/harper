@@ -1,43 +1,14 @@
-import { select, dispatch } from '@wordpress/data';
-import React, { useCallback, useLayoutEffect, useRef } from 'react';
+import { setBlockContent } from './gutenbergUtils';
+import React, { useCallback } from 'react';
 import { useState, useEffect } from 'react';
-import { LocalLinter, Lint, WorkerLinter, Suggestion, Span } from 'harper.js';
+import { Lint, WorkerLinter, Suggestion, Span } from 'harper.js';
 import SuggestionControl from './SuggestionControl';
 import { LintBox } from './Box';
-import { leafNodes } from './domUtils';
+import { getRangeForTextSpan } from './domUtils';
 
 let linter = new WorkerLinter();
 
-function getRangeForTextSpan( target: HTMLElement, span: Span ): Range | null {
-	let children = leafNodes( target );
-
-	let range = document.createRange();
-	let traversed = 0;
-
-	let startFound = false;
-
-	for ( let i = 0; i < children.length; i++ ) {
-		let child = children[ i ] as HTMLElement;
-		let childText = child.textContent;
-
-		if ( traversed + childText.length > span.start && ! startFound ) {
-			range.setStart( child, span.start - traversed );
-			startFound = true;
-		}
-
-		if ( startFound && traversed + childText.length >= span.end ) {
-			range.setEnd( child, span.end - traversed );
-			return range;
-		}
-
-		traversed += childText?.length ?? 0;
-	}
-
-	return null;
-}
-
-/** Get target boxes for a text node.
- * Each box represents a Harper lint in the Node. */
+/** Given an element and the lint results for it, create bounding boxes that represent those errors on-screen.  */
 async function computeLintBoxes(
 	target: HTMLElement,
 	container: Element,
@@ -78,14 +49,6 @@ async function computeLintBoxes(
 	}
 
 	return boxes;
-}
-
-function setBlockContent( clientId: string, text: string ) {
-	const { selectBlock, updateBlockAttributes } =
-		dispatch( 'core/block-editor' );
-
-	selectBlock( clientId );
-	updateBlockAttributes( clientId, { content: text } );
 }
 
 export default function Highlighter( {

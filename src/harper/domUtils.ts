@@ -1,3 +1,5 @@
+import { Span } from 'harper.js';
+
 /** Turn a `NodeList` into a normal JavaScript array. */
 export function extractFromHTMLCollection(
 	collection: HTMLCollection
@@ -45,4 +47,36 @@ export function leafNodes( node: Element ): Element[] {
 	}
 
 	return out;
+}
+
+/** Given an element and a Span of text inside it, compute the Range that represents the region of the DOM represented. */
+export function getRangeForTextSpan(
+	target: HTMLElement,
+	span: Span
+): Range | null {
+	let children = leafNodes( target );
+
+	let range = document.createRange();
+	let traversed = 0;
+
+	let startFound = false;
+
+	for ( let i = 0; i < children.length; i++ ) {
+		let child = children[ i ] as HTMLElement;
+		let childText = child.textContent;
+
+		if ( traversed + childText.length > span.start && ! startFound ) {
+			range.setStart( child, span.start - traversed );
+			startFound = true;
+		}
+
+		if ( startFound && traversed + childText.length >= span.end ) {
+			range.setEnd( child, span.end - traversed );
+			return range;
+		}
+
+		traversed += childText?.length ?? 0;
+	}
+
+	return null;
 }
