@@ -23,7 +23,10 @@ export default function SidebarControl() {
 	let targetNodes = useMemo(
 		() =>
 			documentContainer
-				? getNodesFromQuerySelector( documentContainer, '.rich-text' )
+				? getNodesFromQuerySelector(
+						documentContainer,
+						'[data-block].rich-text'
+				  )
 				: [],
 		[ documentContainer, frameCount ]
 	);
