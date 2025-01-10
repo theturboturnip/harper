@@ -23,16 +23,7 @@ export default function SidebarControl() {
 	let targetNodes = useMemo(
 		() =>
 			documentContainer
-				? [
-						...getNodesFromQuerySelector(
-							documentContainer,
-							'.wp-block-post-title'
-						),
-						...getNodesFromQuerySelector(
-							documentContainer,
-							'.wp-block-paragraph'
-						),
-				  ]
+				? getNodesFromQuerySelector( documentContainer, '.rich-text' )
 				: [],
 		[ documentContainer, frameCount ]
 	);

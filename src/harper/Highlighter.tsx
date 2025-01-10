@@ -101,7 +101,7 @@ export default function Highlighter( {
 	let updateLints = useCallback( () => {
 		let text = target.textContent;
 		text && linter.lint( text ).then( setLints );
-	}, [target] );
+	}, [ target ] );
 
 	useEffect( () => {
 		updateLints();
@@ -136,19 +136,22 @@ export default function Highlighter( {
 	} );
 
 	// Disable browser spellchecking in favor of ours
-	useEffect(() => {
+	useEffect( () => {
 		target.spellcheck = false;
 
 		return () => {
 			target.spellcheck = true;
-		}
-	}, [target])
+		};
+	}, [ target ] );
+
+	let visible = target.checkVisibility();
 
 	return (
 		<>
-			{ targetBoxes.map( ( b ) => (
-				<SuggestionControl lintBox={ b } />
-			) ) }
+			{ visible &&
+				targetBoxes.map( ( b ) => (
+					<SuggestionControl lintBox={ b } />
+				) ) }
 		</>
 	);
 }
