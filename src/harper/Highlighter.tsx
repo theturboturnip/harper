@@ -135,6 +135,15 @@ export default function Highlighter( {
 		};
 	} );
 
+	// Disable browser spellchecking in favor of ours
+	useEffect(() => {
+		target.spellcheck = false;
+
+		return () => {
+			target.spellcheck = true;
+		}
+	}, [target])
+
 	return (
 		<>
 			{ targetBoxes.map( ( b ) => (
