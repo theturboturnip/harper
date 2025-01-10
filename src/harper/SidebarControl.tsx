@@ -37,24 +37,11 @@ export default function SidebarControl() {
 		[ documentContainer, frameCount ]
 	);
 
-	const closeHandlers = useRef( new Set< () => void >() );
-
-	let requestClosePopups = useCallback( () => {
-		closeHandlers.current.forEach( ( h ) => h() );
-	}, [] );
-
 	let highlights =
 		documentContainer &&
 		targetNodes.map( ( n ) => {
 			return createPortal(
-				<Highlighter
-					container={ documentContainer }
-					target={ n }
-					requestClosePopups={ requestClosePopups }
-					registerCloseHandler={ ( handler ) =>
-						closeHandlers.current.add( handler )
-					}
-				/>,
+				<Highlighter container={ documentContainer } target={ n } />,
 				documentContainer
 			);
 		} );

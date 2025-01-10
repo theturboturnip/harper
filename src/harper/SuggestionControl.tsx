@@ -25,15 +25,7 @@ function suggestionText(
 /** A control for an individual suggestion shown on the screen.
  * This includes both the underline to be shown, and the control that appears when you hover over it.
  * */
-export default function SuggestionControl( {
-	lintBox,
-	requestClosePopups,
-	registerCloseHandler,
-}: {
-	lintBox: LintBox;
-	requestClosePopups: () => void;
-	registerCloseHandler: ( handler: () => void ) => void;
-} ) {
+export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
 	let { x, y, width, height, lint, applySuggestion } = lintBox;
 
 	let underlineRef = useRef< HTMLElement | null >( null );
@@ -41,10 +33,6 @@ export default function SuggestionControl( {
 
 	let suggestions = useMemo( () => lint.suggestions(), [ lint ] );
 	const [ showPopover, setShowPopover ] = useState( false );
-
-	useEffect( () => {
-		registerCloseHandler( () => setShowPopover( () => false ) );
-	}, [] );
 
 	useEffect( () => {
 		function mouseUp( e: MouseEvent ) {
@@ -77,7 +65,7 @@ export default function SuggestionControl( {
 				mouseUp
 			);
 		};
-	}, [ requestClosePopups, underlineRef.current ] );
+	}, [ underlineRef.current ] );
 
 	return (
 		<>

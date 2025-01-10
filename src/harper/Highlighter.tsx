@@ -91,13 +91,9 @@ function setBlockContent( clientId: string, text: string ) {
 export default function Highlighter( {
 	container,
 	target,
-	requestClosePopups,
-	registerCloseHandler,
 }: {
 	container: Element;
 	target: HTMLElement;
-	requestClosePopups: () => void;
-	registerCloseHandler: ( handler: () => void ) => void;
 } ) {
 	const [ targetBoxes, setTargetBoxes ] = useState< LintBox[] >( [] );
 	const [ lints, setLints ] = useState< Lint[] >( [] );
@@ -142,11 +138,7 @@ export default function Highlighter( {
 	return (
 		<>
 			{ targetBoxes.map( ( b ) => (
-				<SuggestionControl
-					lintBox={ b }
-					requestClosePopups={ requestClosePopups }
-					registerCloseHandler={ registerCloseHandler }
-				/>
+				<SuggestionControl lintBox={ b } />
 			) ) }
 		</>
 	);
