@@ -5,7 +5,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
-import { LintBox } from './Box';
+import { isPointInBox, LintBox } from './Box';
 import { SuggestionKind } from 'harper.js';
 
 function suggestionText(
@@ -40,13 +40,13 @@ export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
 				return;
 			}
 
-			let rect = underlineRef.current.getBoundingClientRect();
+			let underlineRect = underlineRef.current.getBoundingClientRect();
+			let popoverRect = popoverRef.current?.getBoundingClientRect();
 
 			if (
-				e.clientX > rect.x &&
-				e.clientX < rect.x + width &&
-				e.clientY > rect.y &&
-				e.clientY < rect.y + height
+				isPointInBox( [ e.clientX, e.clientY ], underlineRect ) ||
+				( popoverRect &&
+					isPointInBox( [ e.clientX, e.clientY ], popoverRect ) )
 			) {
 				setShowPopover( () => true );
 			} else {
@@ -65,7 +65,7 @@ export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
 				mouseUp
 			);
 		};
-	}, [ underlineRef.current ] );
+	}, [ underlineRef.current, popoverRef.current ] );
 
 	return (
 		<>

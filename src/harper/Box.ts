@@ -15,3 +15,14 @@ export type LintBox = Box & {
 	lint: Lint;
 	applySuggestion: ( sug: Suggestion ) => void;
 };
+
+export function isPointInBox( point: [ number, number ], box: Box ) {
+	let [ x, y ] = point;
+
+	return (
+		x > box.x &&
+		x < box.x + box.width &&
+		y > box.y &&
+		y < box.y + box.height
+	);
+}
