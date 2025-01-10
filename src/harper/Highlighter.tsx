@@ -101,7 +101,7 @@ export default function Highlighter( {
 	let updateLints = useCallback( () => {
 		let text = target.textContent;
 		text && linter.lint( text ).then( setLints );
-	}, [] );
+	}, [target] );
 
 	useEffect( () => {
 		updateLints();
