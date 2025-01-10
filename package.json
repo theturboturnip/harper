@@ -1,7 +1,7 @@
 {
 	"name": "harper",
 	"version": "0.0.1",
-	"description": "The grammar checker the respects your privacy.",
+	"description": "The grammar checker that respects your privacy.",
 	"main": "build/index.js",
 	"scripts": {
 		"build": "wp-scripts build --webpack-copy-php",
