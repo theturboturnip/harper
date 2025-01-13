@@ -43,7 +43,7 @@ export default function SidebarControl() {
 	return (
 		<>
 			{ highlights }
-			<p>This is a test.</p>
+			<p>This is a test. Eventually, lints will show up here as well.</p>
 		</>
 	);
 }
