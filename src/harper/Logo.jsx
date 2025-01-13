@@ -16,37 +16,19 @@ export default function Logo() {
 				strokeLinejoin: 'round',
 				strokeMiterlimit: 1.5,
 			} }
-			fill="#ffffff"
 		>
-			<rect
-				x={ 0 }
-				y={ 0 }
-				fill="#FFFFFF"
-				width={ 695 }
-				height={ 411 }
-				rx={ 15 }
-			/>
 			<g transform="matrix(1,0,0,1,-5,-1720)">
 				<g
 					id="Artboard1"
 					transform="matrix(0.824576,0,0,0.749254,0.365685,430.856)"
 				>
-					<rect
-						x={ 5.62 }
-						y={ 1720.57 }
-						width={ 842.425 }
-						height={ 547.24 }
-						style={ {
-							fill: 'none',
-						} }
-					/>
 					<g transform="matrix(1.21274,0,0,1.33466,-2183.71,393.157)">
 						<g transform="matrix(1,0,0,1,-22.3927,1.08043)">
 							<path
 								d="M1930.93,1121.75C1930.93,1121.75 1974.66,1080.73 2041.34,1094.1C2086.61,1103.18 2122.83,1145.4 2122.83,1145.4"
 								style={ {
 									fill: 'none',
-									stroke: 'black',
+									stroke: 'currentColor',
 									strokeWidth: '22.92px',
 								} }
 							/>
@@ -56,7 +38,7 @@ export default function Logo() {
 								d="M2250.3,1107.1C2250.3,1107.1 2261.8,1065.58 2311.59,1047.05C2361.62,1028.44 2422.42,1051.13 2422.42,1051.13"
 								style={ {
 									fill: 'none',
-									stroke: 'black',
+									stroke: 'currentColor',
 									strokeWidth: '22.92px',
 								} }
 							/>
@@ -70,7 +52,7 @@ export default function Logo() {
 									ry={ 87.881 }
 									style={ {
 										fill: 'none',
-										stroke: 'black',
+										stroke: 'currentColor',
 										strokeWidth: '20.82px',
 									} }
 								/>
@@ -82,7 +64,7 @@ export default function Logo() {
 								height={ 15.521 }
 								style={ {
 									fill: 'none',
-									stroke: 'black',
+									stroke: 'currentColor',
 									strokeWidth: '20.82px',
 								} }
 							/>
@@ -93,7 +75,7 @@ export default function Logo() {
 								height={ 30.182 }
 								style={ {
 									fill: 'none',
-									stroke: 'black',
+									stroke: 'currentColor',
 									strokeWidth: '20.82px',
 								} }
 							/>
@@ -105,7 +87,7 @@ export default function Logo() {
 									ry={ 87.881 }
 									style={ {
 										fill: 'none',
-										stroke: 'black',
+										stroke: 'currentColor',
 										strokeWidth: '20.82px',
 									} }
 								/>
@@ -118,7 +100,7 @@ export default function Logo() {
 									height={ 15.521 }
 									style={ {
 										fill: 'none',
-										stroke: 'black',
+										stroke: 'currentColor',
 										strokeWidth: '20.82px',
 									} }
 								/>
@@ -131,7 +113,7 @@ export default function Logo() {
 									height={ 30.182 }
 									style={ {
 										fill: 'none',
-										stroke: 'black',
+										stroke: 'currentColor',
 										strokeWidth: '20.82px',
 									} }
 								/>
