@@ -1,12 +1,5 @@
-import { Lint, LocalLinter, Suggestion } from 'harper.js';
-import {
-	getNodesFromQuerySelector,
-	getRangeForTextSpan,
-	getRichTextContainers,
-} from './domUtils';
+import { getNodesFromQuerySelector, getRichTextContainers } from './domUtils';
 import RichText from './RichText';
-import { LintBox } from './Box';
-import { setBlockContent } from './gutenbergUtils';
 import { dispatch } from '@wordpress/data';
 
 /** Represents a Gutenberg block on-screen.
@@ -26,18 +19,14 @@ export default class DataBlock {
 		let cont = getRichTextContainers( this.targetElement );
 
 		return cont.map(
-			( cont, index ) =>
+			( cont ) =>
 				new RichText( cont, this, async ( newContent: string ) => {
 					const { updateBlockAttributes } =
 						dispatch( 'core/block-editor' );
 
-					if ( cont == this.targetElement ) {
-						await updateBlockAttributes( this.getClientId(), {
-							content: newContent,
-						} );
-					} else {
-						console.log( 'UNIMPLEMENTED' );
-					}
+					await updateBlockAttributes( this.getClientId(), {
+						content: newContent,
+					} );
 				} )
 		);
 	}
@@ -46,11 +35,7 @@ export default class DataBlock {
 		let container = this.getContainer();
 
 		let targetNodes = [
-			...getNodesFromQuerySelector( container, '[data-block].rich-text' ),
-			...getNodesFromQuerySelector(
-				container,
-				'[data-block].wp-block-list'
-			),
+			...getNodesFromQuerySelector( container, '[data-block]' ),
 		];
 
 		return targetNodes.map( ( node ) => new DataBlock( node ) );

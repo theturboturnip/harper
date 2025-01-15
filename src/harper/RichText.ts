@@ -6,7 +6,8 @@ import { setBlockContent } from './gutenbergUtils';
 
 export type EditContentCallback = ( newContent: string ) => void;
 
-/** Represents a rich text element on-screen. */
+/** Represents a rich text element on-screen.
+ * It can either be a child element of a `DataBlock` or be the `DataBlock` itself. */
 export default class RichText {
 	private targetElement: Element;
 	private parent: DataBlock;
