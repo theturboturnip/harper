@@ -4,23 +4,26 @@ import { useState, useEffect } from 'react';
 import { Lint, WorkerLinter, Suggestion, Span } from 'harper.js';
 import SuggestionControl from './SuggestionControl';
 import { LintBox } from './Box';
-import { getRangeForTextSpan } from './domUtils';
 import DataBlock from './DataBlock';
+import RichText from './RichText';
 
 let linter = new WorkerLinter();
 
-export default function Highlighter( { block }: { block: DataBlock } ) {
+export default function Highlighter( { richText }: { richText: RichText } ) {
 	const [ targetBoxes, setTargetBoxes ] = useState< LintBox[] >( [] );
 	const [ lints, setLints ] = useState< Lint[] >( [] );
 
-	let updateLints = useCallback( () => {
-		linter.lint( block.getTextContent() ).then( setLints );
-	}, [ block ] );
+	let updateLints = useCallback( async () => {
+		// We assume that a given index always refers to the same rich text field.
+		let contents = richText.getTextContent();
+		let lints = await linter.lint( contents );
+		setLints( lints );
+	}, [ richText ] );
 
 	useEffect( () => {
 		updateLints();
 		let observer = new MutationObserver( updateLints );
-		observer.observe( block.targetElement, {
+		observer.observe( richText.getTargetElement(), {
 			childList: true,
 			characterData: true,
 			subtree: true,
@@ -29,7 +32,7 @@ export default function Highlighter( { block }: { block: DataBlock } ) {
 		return () => {
 			observer.disconnect();
 		};
-	}, [ block ] );
+	}, [ richText ] );
 
 	// Update the lint boxes each frame.
 	// Probably overkill.
@@ -41,7 +44,7 @@ export default function Highlighter( { block }: { block: DataBlock } ) {
 
 		function onFrame( _timestep: DOMHighResTimeStamp ) {
 			let lintBoxes = lints
-				.map( ( lint ) => block.computeLintBox( lint ) )
+				.map( ( lint ) => richText.computeLintBox( lint ) )
 				.flat();
 			setTargetBoxes( lintBoxes );
 
@@ -59,14 +62,14 @@ export default function Highlighter( { block }: { block: DataBlock } ) {
 
 	// Disable browser spellchecking in favor of ours
 	useEffect( () => {
-		block.targetElement.spellcheck = false;
+		richText.getTargetElement().spellcheck = false;
 
 		return () => {
-			block.targetElement.spellcheck = true;
+			richText.getTargetElement().spellcheck = true;
 		};
-	}, [ block ] );
+	}, [ richText ] );
 
-	let visible = block.targetElement.checkVisibility();
+	let visible = richText.getTargetElement().checkVisibility();
 
 	return (
 		<>

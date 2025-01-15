@@ -4,16 +4,42 @@ import {
 	getRangeForTextSpan,
 	getRichTextContainers,
 } from './domUtils';
+import RichText from './RichText';
 import { LintBox } from './Box';
 import { setBlockContent } from './gutenbergUtils';
+import { dispatch } from '@wordpress/data';
 
 /** Represents a Gutenberg block on-screen.
  * So named because all of these blocks have a `data-block` attribute. */
 export default class DataBlock {
-	public targetElement: Element;
+	public readonly targetElement: Element;
 
 	constructor( targetElement: Element ) {
 		this.targetElement = targetElement;
+	}
+
+	private getClientId(): string {
+		return this.targetElement.getAttribute( 'data-block' )!;
+	}
+
+	public getAllRichText(): RichText[] {
+		let cont = getRichTextContainers( this.targetElement );
+
+		return cont.map(
+			( cont, index ) =>
+				new RichText( cont, this, async ( newContent: string ) => {
+					const { updateBlockAttributes } =
+						dispatch( 'core/block-editor' );
+
+					if ( cont == this.targetElement ) {
+						await updateBlockAttributes( this.getClientId(), {
+							content: newContent,
+						} );
+					} else {
+						console.log( 'UNIMPLEMENTED' );
+					}
+				} )
+		);
 	}
 
 	public static getAllDataBlocks(): DataBlock[] {
@@ -30,52 +56,7 @@ export default class DataBlock {
 		return targetNodes.map( ( node ) => new DataBlock( node ) );
 	}
 
-	public getTextContent(): string {
-		return this.targetElement.textContent!;
-	}
-
-	public computeLintBox( lint: Lint ): LintBox[] {
-		let container = DataBlock.getContainer();
-		let text = this.targetElement.textContent;
-		let span = lint.span();
-		let range = getRangeForTextSpan( this.targetElement, span );
-		let linter = new LocalLinter();
-
-		if ( range == null || text == null ) {
-			console.log( 'Could not locate range.' );
-			return [];
-		}
-
-		let targetRects = range.getClientRects();
-		let contRect = container.getBoundingClientRect();
-
-		let boxes: LintBox[] = [];
-
-		for ( let targetRect of targetRects ) {
-			boxes.push( {
-				x: targetRect.x - contRect.x,
-				y: targetRect.y - contRect.y,
-				width: targetRect.width,
-				height: targetRect.height,
-				lint,
-				applySuggestion: async ( sug: Suggestion ) => {
-					let fixed = await linter.applySuggestion( text, sug, span );
-
-					console.log( 'Applying suggestion' );
-
-					setBlockContent( this.getClientId(), fixed );
-				},
-			} );
-		}
-
-		return boxes;
-	}
-
-	private getClientId(): string {
-		return this.targetElement.getAttribute( 'data-block' )!;
-	}
-
-	private static getContainer(): Element {
+	public static getContainer(): Element {
 		const iframe = document.querySelector( 'iframe[name="editor-canvas"]' );
 		const iframeDocument =
 			iframe?.contentDocument || iframe?.contentWindow.document;

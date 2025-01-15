@@ -17,16 +17,18 @@ function getDocumentContainer(): Element | null {
 }
 
 export default function SidebarControl() {
-	let frameCount = useFrameCount();
-
 	let documentContainer = useMemo( getDocumentContainer, [] );
 
 	let blocks = DataBlock.getAllDataBlocks();
+	let richTexts = blocks.flatMap( ( block ) => block.getAllRichText() );
 
 	let highlights =
 		documentContainer &&
-		blocks.map( ( block ) =>
-			createPortal( <Highlighter block={ block } />, documentContainer )
+		richTexts.map( ( richText ) =>
+			createPortal(
+				<Highlighter richText={ richText } />,
+				documentContainer
+			)
 		);
 
 	return (
