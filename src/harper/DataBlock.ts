@@ -24,8 +24,16 @@ export default class DataBlock {
 					const { updateBlockAttributes } =
 						dispatch( 'core/block-editor' );
 
+					console.log(
+						`Updating ${ this.getClientId() } to "${ newContent }"`
+					);
+
+					let attributeName =
+						cont.getAttribute( 'data-wp-block-attribute-key' ) ??
+						'content';
+
 					await updateBlockAttributes( this.getClientId(), {
-						content: newContent,
+						[ attributeName ]: newContent,
 					} );
 				} )
 		);
