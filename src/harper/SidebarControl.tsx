@@ -1,40 +1,50 @@
 import DataBlock from './DataBlock';
-import { ReactPortal, useCallback, useMemo, useRef } from 'react';
-import useFrameCount from './useFrameCount';
-import { getNodesFromQuerySelector, getRichTextContainers } from './domUtils';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Highlighter from './Highlighter';
 import React from 'react';
 
-function getDocumentContainer(): Element | null {
-	const iframe = document.querySelector( 'iframe[name="editor-canvas"]' );
-	const iframeDocument =
-		iframe?.contentDocument || iframe?.contentWindow.document;
-	const container =
-		iframeDocument?.body ||
-		document.querySelector( '.edit-post-visual-editor > div' );
-	return container;
-}
-
 export default function SidebarControl() {
-	let documentContainer = useMemo( getDocumentContainer, [] );
+	let documentContainer = useMemo< Element >(
+		() => DataBlock.getContainer(),
+		[]
+	);
 
-	let blocks = DataBlock.getAllDataBlocks();
-	let richTexts = blocks.flatMap( ( block ) => block.getAllRichText() );
+	const [ blocks, setBlocks ] = useState< DataBlock[] >( [] );
+	const updateBlocks = useCallback(
+		() => setBlocks( DataBlock.getAllDataBlocks() ),
+		[]
+	);
+
+	useEffect( updateBlocks, [] );
+
+	useEffect( () => {
+		let observer = new MutationObserver( updateBlocks );
+
+		observer.observe( documentContainer, {
+			subtree: true,
+			childList: true,
+		} );
+
+		return () => observer.disconnect();
+	}, [ documentContainer, updateBlocks ] );
+
+	const richTexts = useMemo(
+		() => blocks.flatMap( ( block ) => block.getAllRichText() ),
+		[ blocks ]
+	);
 
 	let highlights =
 		documentContainer &&
 		richTexts.map( ( richText ) =>
 			createPortal(
-				<Highlighter richText={ richText } />,
+				<Highlighter
+					richText={ richText }
+					key={ richText.getTextContent() }
+				/>,
 				documentContainer
 			)
 		);
 
-	return (
-		<>
-			{ highlights }
-			<p>This is a test. Eventually, lints will show up here as well.</p>
-		</>
-	);
+	return <>{ highlights }</>;
 }

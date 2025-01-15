@@ -10,7 +10,7 @@ function suggestionText(
 	if ( kind == SuggestionKind.Remove ) {
 		return `Remove "${ problemText }"`;
 	} else if ( kind == SuggestionKind.Replace ) {
-		return `Replace with "${ replacementText }"`;
+		return `Replace with “${ replacementText }”`;
 	} else {
 		return `Insert "${ replacementText }"`;
 	}
