@@ -51,7 +51,7 @@ export function leafNodes( node: Element ): Element[] {
 
 /** Given an element and a Span of text inside it, compute the Range that represents the region of the DOM represented. */
 export function getRangeForTextSpan(
-	target: HTMLElement,
+	target: Element,
 	span: Span
 ): Range | null {
 	let children = leafNodes( target );
@@ -79,4 +79,22 @@ export function getRangeForTextSpan(
 	}
 
 	return null;
+}
+
+/** Locate the rich text containers inside a given element.
+ * Notice: this function may return the provided element. */
+export function getRichTextContainers( target: Element ): Element[] {
+	let elms: Element[] = [];
+
+	if ( target.classList.contains( 'rich-text' ) ) {
+		elms.push( target );
+	}
+
+	elms.push(
+		...extractFromHTMLCollection(
+			target.getElementsByClassName( 'rich-text' )
+		)
+	);
+
+	return elms;
 }

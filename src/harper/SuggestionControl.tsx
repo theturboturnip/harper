@@ -1,10 +1,4 @@
-import React, {
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { isPointInBox, LintBox } from './Box';
 import { SuggestionKind } from 'harper.js';
 

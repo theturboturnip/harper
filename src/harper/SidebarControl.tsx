@@ -1,6 +1,7 @@
+import DataBlock from './DataBlock';
 import { ReactPortal, useCallback, useMemo, useRef } from 'react';
 import useFrameCount from './useFrameCount';
-import { getNodesFromQuerySelector } from './domUtils';
+import { getNodesFromQuerySelector, getRichTextContainers } from './domUtils';
 import { createPortal } from 'react-dom';
 import Highlighter from './Highlighter';
 import React from 'react';
@@ -20,25 +21,13 @@ export default function SidebarControl() {
 
 	let documentContainer = useMemo( getDocumentContainer, [] );
 
-	let targetNodes = useMemo(
-		() =>
-			documentContainer
-				? getNodesFromQuerySelector(
-						documentContainer,
-						'[data-block].rich-text'
-				  )
-				: [],
-		[ documentContainer, frameCount ]
-	);
+	let blocks = DataBlock.getAllDataBlocks();
 
 	let highlights =
 		documentContainer &&
-		targetNodes.map( ( n ) => {
-			return createPortal(
-				<Highlighter container={ documentContainer } target={ n } />,
-				documentContainer
-			);
-		} );
+		blocks.map( ( block ) =>
+			createPortal( <Highlighter block={ block } />, documentContainer )
+		);
 
 	return (
 		<>

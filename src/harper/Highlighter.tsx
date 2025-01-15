@@ -5,71 +5,22 @@ import { Lint, WorkerLinter, Suggestion, Span } from 'harper.js';
 import SuggestionControl from './SuggestionControl';
 import { LintBox } from './Box';
 import { getRangeForTextSpan } from './domUtils';
+import DataBlock from './DataBlock';
 
 let linter = new WorkerLinter();
 
-/** Given an element and the lint results for it, create bounding boxes that represent those errors on-screen.  */
-async function computeLintBoxes(
-	target: HTMLElement,
-	container: Element,
-	lints: Lint[]
-): Promise< LintBox[] > {
-	// The ID of the node we're looking at
-	let clientId = target.getAttribute( 'data-block' );
-	let text = target.textContent;
-
-	let boxes: LintBox[] = [];
-
-	for ( let lint of lints ) {
-		let span = lint.span();
-		let range = getRangeForTextSpan( target, span );
-
-		if ( range == null ) {
-			console.log( 'Could not locate range.' );
-			continue;
-		}
-
-		let targetRects = range.getClientRects();
-		let contRect = container.getBoundingClientRect();
-
-		for ( let targetRect of targetRects ) {
-			boxes.push( {
-				x: targetRect.x - contRect.x,
-				y: targetRect.y - contRect.y,
-				width: targetRect.width,
-				height: targetRect.height,
-				lint,
-				applySuggestion: async ( sug: Suggestion ) => {
-					let fixed = await linter.applySuggestion( text, sug, span );
-
-					setBlockContent( clientId, fixed );
-				},
-			} );
-		}
-	}
-
-	return boxes;
-}
-
-export default function Highlighter( {
-	container,
-	target,
-}: {
-	container: Element;
-	target: HTMLElement;
-} ) {
+export default function Highlighter( { block }: { block: DataBlock } ) {
 	const [ targetBoxes, setTargetBoxes ] = useState< LintBox[] >( [] );
 	const [ lints, setLints ] = useState< Lint[] >( [] );
 
 	let updateLints = useCallback( () => {
-		let text = target.textContent;
-		text && linter.lint( text ).then( setLints );
-	}, [ target ] );
+		linter.lint( block.getTextContent() ).then( setLints );
+	}, [ block ] );
 
 	useEffect( () => {
 		updateLints();
 		let observer = new MutationObserver( updateLints );
-		observer.observe( target, {
+		observer.observe( block.targetElement, {
 			childList: true,
 			characterData: true,
 			subtree: true,
@@ -78,13 +29,21 @@ export default function Highlighter( {
 		return () => {
 			observer.disconnect();
 		};
-	}, [ target ] );
+	}, [ block ] );
 
+	// Update the lint boxes each frame.
+	// Probably overkill.
+	//
+	// TODO: revisit this to do more lazily.
+	// Maybe `onLayoutEffect`?
 	useEffect( () => {
 		let running = true;
 
 		function onFrame( _timestep: DOMHighResTimeStamp ) {
-			computeLintBoxes( target, container, lints ).then( setTargetBoxes );
+			let lintBoxes = lints
+				.map( ( lint ) => block.computeLintBox( lint ) )
+				.flat();
+			setTargetBoxes( lintBoxes );
 
 			if ( running ) {
 				requestAnimationFrame( onFrame );
@@ -100,14 +59,14 @@ export default function Highlighter( {
 
 	// Disable browser spellchecking in favor of ours
 	useEffect( () => {
-		target.spellcheck = false;
+		block.targetElement.spellcheck = false;
 
 		return () => {
-			target.spellcheck = true;
+			block.targetElement.spellcheck = true;
 		};
-	}, [ target ] );
+	}, [ block ] );
 
-	let visible = target.checkVisibility();
+	let visible = block.targetElement.checkVisibility();
 
 	return (
 		<>
