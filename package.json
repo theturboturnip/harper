@@ -19,6 +19,6 @@
 	"dependencies": {
 		"@wordpress/data": "^10.15.1",
 		"@wordpress/editor": "^14.15.1",
-		"harper.js": "^0.15.0"
+		"harper.js": "^0.16.0"
 	}
 }
