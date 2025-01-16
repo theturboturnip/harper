@@ -9,10 +9,10 @@ import React from 'react';
 function Sidebar() {
 	return (
 		<>
-			<PluginSidebarMoreMenuItem target="harper-sidebar" icon={ Logo }>
+			<PluginSidebarMoreMenuItem target="harper-sidebar" icon={Logo}>
 				Harper
 			</PluginSidebarMoreMenuItem>
-			<PluginSidebar name="harper-sidebar" title="Harper" icon={ Logo }>
+			<PluginSidebar name="harper-sidebar" title="Harper" icon={Logo}>
 				<SidebarControl />
 			</PluginSidebar>
 		</>
@@ -20,8 +20,8 @@ function Sidebar() {
 }
 
 // @ts-ignore
-if ( ! window.__harperSidebarRegistered ) {
-	registerPlugin( 'harper-sidebar', { render: Sidebar } );
+if (!window.__harperSidebarRegistered) {
+	registerPlugin('harper-sidebar', { render: Sidebar });
 	// @ts-ignore
 	window.__harperSidebarRegistered = true;
 }

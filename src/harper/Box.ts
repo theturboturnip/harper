@@ -13,11 +13,11 @@ export type Box = {
 
 export type LintBox = Box & {
 	lint: Lint;
-	applySuggestion: ( sug: Suggestion ) => void;
+	applySuggestion: (sug: Suggestion) => void;
 };
 
-export function isPointInBox( point: [ number, number ], box: Box ) {
-	let [ x, y ] = point;
+export function isPointInBox(point: [number, number], box: Box) {
+	const [x, y] = point;
 
 	return (
 		x > box.x &&

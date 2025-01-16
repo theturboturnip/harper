@@ -2,60 +2,58 @@ import { getNodesFromQuerySelector, getRichTextContainers } from './domUtils';
 import RichText from './RichText';
 import { dispatch } from '@wordpress/data';
 
-/** Represents a Gutenberg block on-screen.
- * So named because all of these blocks have a `data-block` attribute. */
+/**
+ * Represents a Gutenberg block on-screen.
+ * So named because all of these blocks have a `data-block` attribute.
+ */
 export default class DataBlock {
 	public readonly targetElement: Element;
 
-	constructor( targetElement: Element ) {
+	constructor(targetElement: Element) {
 		this.targetElement = targetElement;
 	}
 
 	private getClientId(): string {
-		return this.targetElement.getAttribute( 'data-block' )!;
+		return this.targetElement.getAttribute('data-block')!;
 	}
 
 	public getAllRichText(): RichText[] {
-		let cont = getRichTextContainers( this.targetElement );
+		const containers = getRichTextContainers(this.targetElement);
 
-		return cont.map(
-			( cont ) =>
-				new RichText( cont, this, async ( newContent: string ) => {
+		return containers.map(
+			(cont) =>
+				new RichText(cont, this, async (newContent: string) => {
 					const { updateBlockAttributes } =
-						dispatch( 'core/block-editor' );
+						dispatch('core/block-editor');
 
-					console.log(
-						`Updating ${ this.getClientId() } to "${ newContent }"`
-					);
-
-					let attributeName =
-						cont.getAttribute( 'data-wp-block-attribute-key' ) ??
+					const attributeName =
+						cont.getAttribute('data-wp-block-attribute-key') ??
 						'content';
 
-					await updateBlockAttributes( this.getClientId(), {
-						[ attributeName ]: newContent,
-					} );
-				} )
+					await updateBlockAttributes(this.getClientId(), {
+						[attributeName]: newContent,
+					});
+				})
 		);
 	}
 
 	public static getAllDataBlocks(): DataBlock[] {
-		let container = this.getContainer();
+		const container = this.getContainer();
 
-		let targetNodes = [
-			...getNodesFromQuerySelector( container, '[data-block]' ),
+		const targetNodes = [
+			...getNodesFromQuerySelector(container, '[data-block]'),
 		];
 
-		return targetNodes.map( ( node ) => new DataBlock( node ) );
+		return targetNodes.map((node) => new DataBlock(node));
 	}
 
 	public static getContainer(): Element {
-		const iframe = document.querySelector( 'iframe[name="editor-canvas"]' );
+		const iframe = document.querySelector('iframe[name="editor-canvas"]');
 		const iframeDocument =
 			iframe?.contentDocument || iframe?.contentWindow.document;
 		const container =
 			iframeDocument?.body ||
-			document.querySelector( '.edit-post-visual-editor > div' );
+			document.querySelector('.edit-post-visual-editor > div');
 		return container;
 	}
 }

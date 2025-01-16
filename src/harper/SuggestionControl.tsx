@@ -7,102 +7,107 @@ function suggestionText(
 	problemText: string,
 	replacementText: string
 ): string {
-	if ( kind == SuggestionKind.Remove ) {
-		return `Remove "${ problemText }"`;
-	} else if ( kind == SuggestionKind.Replace ) {
-		return `Replace with “${ replacementText }”`;
-	} else {
-		return `Insert "${ replacementText }"`;
+	if (kind === SuggestionKind.Remove) {
+		return `Remove "${problemText}"`;
+	} else if (kind === SuggestionKind.Replace) {
+		return `Replace with “${replacementText}”`;
 	}
+	return `Insert "${replacementText}"`;
 }
 
-/** A control for an individual suggestion shown on the screen.
+/**
+ * A control for an individual suggestion shown on the screen.
  * This includes both the underline to be shown, and the control that appears when you hover over it.
- * */
-export default function SuggestionControl( { lintBox }: { lintBox: LintBox } ) {
-	let { x, y, width, height, lint, applySuggestion } = lintBox;
+ * @param root0
+ * @param root0.lintBox
+ */
+export default function SuggestionControl({ lintBox }: { lintBox: LintBox }) {
+	const { x, y, width, height, lint, applySuggestion } = lintBox;
 
-	let underlineRef = useRef< HTMLElement | null >( null );
-	let popoverRef = useRef< HTMLElement | null >( null );
+	const underlineRef = useRef<HTMLDivElement | null>(null);
+	const popoverRef = useRef<HTMLDivElement | null>(null);
 
-	let suggestions = useMemo( () => lint.suggestions(), [ lint ] );
-	const [ showPopover, setShowPopover ] = useState( false );
+	const suggestions = useMemo(() => lint.suggestions(), [lint]);
+	const [showPopover, setShowPopover] = useState(false);
 
-	useEffect( () => {
-		function mouseUp( e: MouseEvent ) {
-			if ( underlineRef.current == null ) {
+	useEffect(() => {
+		const effectTarget = underlineRef.current;
+		const popover = popoverRef.current;
+
+		function mouseUp(e: MouseEvent) {
+			if (effectTarget === null) {
 				return;
 			}
 
-			let underlineRect = underlineRef.current.getBoundingClientRect();
-			let popoverRect = popoverRef.current?.getBoundingClientRect();
+			const underlineRect = effectTarget.getBoundingClientRect();
+			const popoverRect = popover?.getBoundingClientRect();
 
 			if (
-				isPointInBox( [ e.clientX, e.clientY ], underlineRect ) ||
-				( popoverRect &&
-					isPointInBox( [ e.clientX, e.clientY ], popoverRect ) )
+				isPointInBox([e.clientX, e.clientY], underlineRect) ||
+				(popoverRect &&
+					isPointInBox([e.clientX, e.clientY], popoverRect))
 			) {
-				setShowPopover( () => true );
+				setShowPopover(() => true);
 			} else {
-				setShowPopover( false );
+				setShowPopover(false);
 			}
 		}
 
-		underlineRef.current?.parentElement?.addEventListener(
-			'mouseup',
-			mouseUp
-		);
+		effectTarget?.parentElement?.addEventListener('mouseup', mouseUp);
 
 		return () => {
-			underlineRef.current?.parentElement?.removeEventListener(
+			effectTarget?.parentElement?.removeEventListener(
 				'mouseup',
 				mouseUp
 			);
 		};
-	}, [ underlineRef.current, popoverRef.current ] );
+	}, []);
 
 	return (
 		<>
 			<div
-				ref={ underlineRef }
-				className={ `harper-underline-${ lint.lint_kind() }` }
-				style={ {
+				ref={underlineRef}
+				className={`harper-underline-${lint.lint_kind()}`}
+				style={{
 					position: 'absolute',
-					top: `${ y }px`,
-					left: ` ${ x }px`,
-					width: `${ width }px`,
-					height: `${ height }px`,
+					top: `${y}px`,
+					left: ` ${x}px`,
+					width: `${width}px`,
+					height: `${height}px`,
 					zIndex: -100,
-				} }
+				}}
 			></div>
-			{ showPopover && (
+			{showPopover && (
 				<div
-					ref={ popoverRef }
+					ref={popoverRef}
 					className="harper-popover"
-					style={ {
+					style={{
 						position: 'absolute',
-						top: `${ y + height + 4 }px`,
-						left: ` ${ x }px`,
+						top: `${y + height + 4}px`,
+						left: ` ${x}px`,
 						zIndex: 100,
-					} }
+					}}
 				>
-					<h1 className={ `harper-underline-${ lint.lint_kind() }` }>
-						{ lint.lint_kind() }
+					<h1 className={`harper-underline-${lint.lint_kind()}`}>
+						{lint.lint_kind()}
 					</h1>
 
-					<p>{ lint.message() }</p>
+					<p>{lint.message()}</p>
 
-					{ suggestions.map( ( sug ) => (
-						<button onClick={ () => applySuggestion( sug ) }>
-							{ suggestionText(
+					{suggestions.map((sug, index) => (
+						<button
+							key={index}
+							onClick={() => applySuggestion(sug)}
+						>
+							{suggestionText(
 								sug.kind(),
 								lint.get_problem_text(),
 								sug.get_replacement_text()
-							) }
+							)}
 						</button>
-					) ) }
+					))}
 				</div>
-			) }
+			)}
 		</>
 	);
 }

@@ -1,77 +1,85 @@
 import { Span } from 'harper.js';
 
-/** Turn a `NodeList` into a normal JavaScript array. */
+/**
+ * Turn a `NodeList` into a normal JavaScript array.
+ * @param collection
+ */
 export function extractFromHTMLCollection(
 	collection: HTMLCollection
 ): Element[] {
-	let elements: Element[] = [];
+	const elements: Element[] = [];
 
-	for ( let el of collection ) {
-		elements.push( el );
+	for (const el of collection) {
+		elements.push(el);
 	}
 
 	return elements;
 }
 
-/** Turn a `NodeList` into a normal JavaScript array. */
-export function extractFromNodeList< T extends Node >(
-	list: NodeListOf< T >
-): T[] {
-	let elements: T[] = [];
+/**
+ * Turn a `NodeList` into a normal JavaScript array.
+ * @param list
+ */
+export function extractFromNodeList<T extends Node>(list: NodeListOf<T>): T[] {
+	const elements: T[] = [];
 
-	for ( let i = 0; i < list.length; i++ ) {
-		let item = list[ i ];
-		elements.push( item );
+	for (let i = 0; i < list.length; i++) {
+		const item = list[i];
+		elements.push(item);
 	}
 
 	return elements;
 }
 
-export function getNodesFromQuerySelector( element: Element, query: string ) {
-	return extractFromNodeList( element.querySelectorAll( query ) );
+export function getNodesFromQuerySelector(element: Element, query: string) {
+	return extractFromNodeList(element.querySelectorAll(query));
 }
 
-/** Flatten a provided node, and it's children into a single array. */
-export function leafNodes( node: Element ): Element[] {
-	let out = [];
+/**
+ * Flatten a provided node, and it's children into a single array.
+ * @param node
+ */
+export function leafNodes(node: Node): Node[] {
+	const out: Node[] = [];
 
-	let children = extractFromNodeList( node.childNodes );
+	const children = extractFromNodeList(node.childNodes);
 
-	if ( children.length == 0 ) {
-		return [ node ];
+	if (children.length === 0) {
+		return [node];
 	}
 
-	for ( let child of children ) {
-		let sub = leafNodes( child );
-		sub.forEach( ( v ) => out.push( v ) );
+	for (const child of children) {
+		const sub = leafNodes(child);
+		sub.forEach((v) => out.push(v));
 	}
 
 	return out;
 }
 
-/** Given an element and a Span of text inside it, compute the Range that represents the region of the DOM represented. */
-export function getRangeForTextSpan(
-	target: Element,
-	span: Span
-): Range | null {
-	let children = leafNodes( target );
+/**
+ * Given an element and a Span of text inside it, compute the Range that represents the region of the DOM represented.
+ * @param target
+ * @param span
+ */
+export function getRangeForTextSpan(target: Element, span: Span): Range | null {
+	const children = leafNodes(target);
 
-	let range = document.createRange();
+	const range = document.createRange();
 	let traversed = 0;
 
 	let startFound = false;
 
-	for ( let i = 0; i < children.length; i++ ) {
-		let child = children[ i ] as HTMLElement;
-		let childText = child.textContent;
+	for (let i = 0; i < children.length; i++) {
+		const child = children[i] as HTMLElement;
+		const childText = child.textContent ?? '';
 
-		if ( traversed + childText.length > span.start && ! startFound ) {
-			range.setStart( child, span.start - traversed );
+		if (traversed + childText.length > span.start && !startFound) {
+			range.setStart(child, span.start - traversed);
 			startFound = true;
 		}
 
-		if ( startFound && traversed + childText.length >= span.end ) {
-			range.setEnd( child, span.end - traversed );
+		if (startFound && traversed + childText.length >= span.end) {
+			range.setEnd(child, span.end - traversed);
 			return range;
 		}
 
@@ -81,19 +89,20 @@ export function getRangeForTextSpan(
 	return null;
 }
 
-/** Locate the rich text containers inside a given element.
- * Notice: this function may return the provided element. */
-export function getRichTextContainers( target: Element ): Element[] {
-	let elms: Element[] = [];
+/**
+ * Locate the rich text containers inside a given element.
+ * Notice: this function may return the provided element.
+ * @param target
+ */
+export function getRichTextContainers(target: Element): Element[] {
+	const elms: Element[] = [];
 
-	if ( target.classList.contains( 'rich-text' ) ) {
-		elms.push( target );
+	if (target.classList.contains('rich-text')) {
+		elms.push(target);
 	}
 
 	elms.push(
-		...extractFromHTMLCollection(
-			target.getElementsByClassName( 'rich-text' )
-		)
+		...extractFromHTMLCollection(target.getElementsByClassName('rich-text'))
 	);
 
 	return elms;

@@ -2,12 +2,13 @@ import { Lint, LocalLinter, Suggestion } from 'harper.js';
 import { LintBox } from './Box';
 import DataBlock from './DataBlock';
 import { getRangeForTextSpan } from './domUtils';
-import { setBlockContent } from './gutenbergUtils';
 
-export type EditContentCallback = ( newContent: string ) => void;
+export type EditContentCallback = (newContent: string) => void;
 
-/** Represents a rich text element on-screen.
- * It can either be a child element of a `DataBlock` or be the `DataBlock` itself. */
+/**
+ * Represents a rich text element on-screen.
+ * It can either be a child element of a `DataBlock` or be the `DataBlock` itself.
+ */
 export default class RichText {
 	private targetElement: Element;
 	private parent: DataBlock;
@@ -31,36 +32,36 @@ export default class RichText {
 		return this.targetElement.textContent ?? '';
 	}
 
-	public computeLintBox( lint: Lint ): LintBox[] {
-		let container = DataBlock.getContainer();
-		let text = this.targetElement.textContent;
-		let span = lint.span();
-		let range = getRangeForTextSpan( this.targetElement, span );
-		let linter = new LocalLinter();
+	public computeLintBox(lint: Lint): LintBox[] {
+		const text = this.targetElement.textContent;
+		const span = lint.span();
+		const range = getRangeForTextSpan(this.targetElement, span);
+		const linter = new LocalLinter();
 
-		if ( range == null || text == null ) {
-			console.log( 'Could not locate range.' );
+		if (range === null || text === null) {
+			console.log('Could not locate range.');
 			return [];
 		}
 
-		let targetRects = range.getClientRects();
-		let contRect = container.getBoundingClientRect();
+		const targetRects = range.getClientRects();
+		const container = DataBlock.getContainer();
+		const contRect = container.getBoundingClientRect();
 
-		let boxes: LintBox[] = [];
+		const boxes: LintBox[] = [];
 
-		for ( let targetRect of targetRects ) {
-			boxes.push( {
+		for (const targetRect of targetRects) {
+			boxes.push({
 				x: targetRect.x - contRect.x,
 				y: targetRect.y - contRect.y,
 				width: targetRect.width,
 				height: targetRect.height,
 				lint,
-				applySuggestion: async ( sug: Suggestion ) => {
-					let fixed = await linter.applySuggestion( text, sug, span );
+				applySuggestion: async (sug: Suggestion) => {
+					const fixed = await linter.applySuggestion(text, sug, span);
 
-					this.editContent( fixed );
+					this.editContent(fixed);
 				},
-			} );
+			});
 		}
 
 		return boxes;
