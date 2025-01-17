@@ -61,7 +61,10 @@ export default function SuggestionControl({ lintBox }: { lintBox: LintBox }) {
 				mouseUp
 			);
 		};
-	}, []);
+
+		// The lint is just plain _wrong_ here.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [underlineRef.current, popoverRef.current]);
 
 	return (
 		<>
