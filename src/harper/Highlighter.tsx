@@ -1,12 +1,13 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { Lint, WorkerLinter } from 'harper.js';
+import React, { useCallback, useState, useEffect, useContext } from 'react';
+import { Lint } from 'harper.js';
 import SuggestionControl from './SuggestionControl';
 import { LintBox } from './Box';
 import RichText from './RichText';
-
-const linter = new WorkerLinter();
+import HarperContext from './HarperContext';
 
 export default function Highlighter({ richText }: { richText: RichText }) {
+	const linter = useContext(HarperContext);
+
 	const [targetBoxes, setTargetBoxes] = useState<LintBox[]>([]);
 	const [lints, setLints] = useState<Lint[]>([]);
 

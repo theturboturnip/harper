@@ -1,7 +1,15 @@
 import DataBlock from './DataBlock';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+	createContext,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import Highlighter from './Highlighter';
+import { WorkerLinter } from 'harper.js';
 
 export default function SidebarControl() {
 	const documentContainer = useMemo<Element>(
