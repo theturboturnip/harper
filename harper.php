@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @see https://developer.wordpress.org/reference/functions/register_block_type/
  */
-function harper_harper_block_init() {
+function create_harper_block_init() {
 	register_block_type( __DIR__ . '/build/harper' );
 }
-add_action( 'init', 'harper_harper_block_init' );
+add_action( 'init', 'create_harper_block_init' );

@@ -77,10 +77,9 @@ export default function SuggestionControl({ lintBox }: { lintBox: LintBox }) {
 					left: ` ${x}px`,
 					width: `${width}px`,
 					height: `${height}px`,
-					zIndex: -100,
 				}}
 			></div>
-			{showPopover && (
+			{showPopover ? (
 				<div
 					ref={popoverRef}
 					className="harper-popover"
@@ -110,6 +109,8 @@ export default function SuggestionControl({ lintBox }: { lintBox: LintBox }) {
 						</button>
 					))}
 				</div>
+			) : (
+				<></>
 			)}
 		</>
 	);
