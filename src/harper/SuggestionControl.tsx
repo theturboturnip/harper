@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { isPointInBox, LintBox } from './Box';
 import { SuggestionKind } from 'harper.js';
+import { Button, Popover } from '@wordpress/components';
 
 function suggestionText(
 	kind: SuggestionKind,
@@ -80,35 +81,29 @@ export default function SuggestionControl({ lintBox }: { lintBox: LintBox }) {
 				}}
 			></div>
 			{showPopover ? (
-				<div
+				<Popover
 					ref={popoverRef}
+					anchor={underlineRef.current}
 					className="harper-popover"
-					style={{
-						position: 'absolute',
-						top: `${y + height + 4}px`,
-						left: ` ${x}px`,
-						zIndex: 100,
-					}}
 				>
-					<h1 className={`harper-underline-${lint.lint_kind()}`}>
+					<h2 className={`harper-underline-${lint.lint_kind()}`}>
 						{lint.lint_kind()}
-					</h1>
-
+					</h2>
 					<p>{lint.message()}</p>
-
 					{suggestions.map((sug, index) => (
-						<button
+						<Button
 							key={index}
 							onClick={() => applySuggestion(sug)}
+							variant="primary"
 						>
 							{suggestionText(
 								sug.kind(),
 								lint.get_problem_text(),
 								sug.get_replacement_text()
 							)}
-						</button>
+						</Button>
 					))}
-				</div>
+				</Popover>
 			) : (
 				<></>
 			)}
