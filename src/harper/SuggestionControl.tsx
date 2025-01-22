@@ -78,6 +78,7 @@ export default function SuggestionControl({ lintBox }: { lintBox: LintBox }) {
 					left: ` ${x}px`,
 					width: `${width}px`,
 					height: `${height}px`,
+					pointerEvents: 'none',
 				}}
 			></div>
 			{showPopover ? (
