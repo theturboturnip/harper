@@ -50,6 +50,17 @@ export function useLinter(): Linter {
 	return data.linter;
 }
 
+export function useLintDescriptions(): Record<string, string> {
+	const [data] = useContext(harperContext);
+	const [descriptions, setDescriptions] = useState({});
+
+	useEffect(() => {
+		data.linter.getLintDescriptions().then(setDescriptions);
+	}, [data]);
+
+	return descriptions;
+}
+
 export function useDefaultLintConfig(): LintConfig {
 	const [data] = useContext(harperContext);
 	const [defaultConfig, setDefaultConfig] = useState({});

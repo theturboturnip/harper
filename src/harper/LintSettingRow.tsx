@@ -7,8 +7,10 @@ export default function LintSettingRow({
 	value,
 	defaultValue,
 	setValue,
+	description,
 }: {
 	name: string;
+	description: string;
 	value: boolean | undefined;
 	defaultValue: boolean;
 	setValue: (newValue: boolean | undefined) => void;
@@ -26,8 +28,16 @@ export default function LintSettingRow({
 			{({ className }) => (
 				<div className={`${className} harper-lint-config-row`}>
 					<h3>{title}</h3>
+					<p>{description}</p>
 
 					<CheckboxControl
+						label={
+							value == null
+								? `Default (${defaultValue ? 'Enabled' : 'Disabled'})`
+								: value
+									? 'Enabled'
+									: 'Disabled'
+						}
 						onChange={(val) => setValue(val)}
 						checked={value ?? defaultValue}
 					></CheckboxControl>

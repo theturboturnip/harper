@@ -5,11 +5,11 @@
 }
 
 .harper-lint-config-row {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
 	padding: 6px;
+}
+
+.harper-lint-config-row > h3{
+	font-weight: bold;
 }
 
 .harper-popover > div > button {
