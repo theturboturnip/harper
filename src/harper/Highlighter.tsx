@@ -72,11 +72,8 @@ export default function Highlighter({ richText }: { richText: RichText }) {
 	return (
 		<>
 			{visible &&
-				targetBoxes.map((b) => (
-					<SuggestionControl
-						lintBox={b}
-						key={richText.getTextContent()}
-					/>
+				targetBoxes.map((b, index) => (
+					<SuggestionControl lintBox={b} key={index} />
 				))}
 		</>
 	);

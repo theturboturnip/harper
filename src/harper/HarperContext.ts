@@ -1,4 +1,10 @@
 import { WorkerLinter } from 'harper.js';
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 
-export default createContext(new WorkerLinter());
+const HarperContext = createContext(new WorkerLinter());
+
+export default HarperContext;
+
+export function useLinter() {
+	return useContext(HarperContext);
+}
