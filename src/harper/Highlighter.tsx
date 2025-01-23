@@ -1,64 +1,21 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { Lint } from 'harper.js';
+import React, { useEffect } from 'react';
 import SuggestionControl from './SuggestionControl';
-import { LintBox } from './Box';
 import RichText from './RichText';
-import { useLinter, useLinterConfig } from './HarperContext';
+import { LintBox } from './Box';
 
-export default function Highlighter({ richText }: { richText: RichText }) {
-	const linter = useLinter();
-	const [config] = useLinterConfig();
-
-	const [targetBoxes, setTargetBoxes] = useState<LintBox[]>([]);
-	const [lints, setLints] = useState<Lint[]>([]);
-
-	const updateLints = useCallback(async () => {
-		// We assume that a given index always refers to the same rich text field.
-		const contents = richText.getTextContent();
-		const newLints = await linter.lint(contents);
-		setLints(newLints);
-	}, [richText, linter, config]);
-
-	useEffect(() => {
-		updateLints();
-		const observer = new MutationObserver(updateLints);
-		observer.observe(richText.getTargetElement(), {
-			childList: true,
-			characterData: true,
-			subtree: true,
-		});
-
-		return () => {
-			observer.disconnect();
-		};
-	}, [richText, updateLints]);
-
-	// Update the lint boxes each frame.
-	// Probably overkill.
-	//
-	// TODO: revisit this to do more lazily.
-	// Maybe `onLayoutEffect`?
-	useEffect(() => {
-		let running = true;
-
-		function onFrame() {
-			const lintBoxes = lints
-				.map((lint) => richText.computeLintBox(lint))
-				.flat();
-			setTargetBoxes(lintBoxes);
-
-			if (running) {
-				requestAnimationFrame(onFrame);
-			}
-		}
-
-		requestAnimationFrame(onFrame);
-
-		return () => {
-			running = false;
-		};
-	});
-
+/**
+ * Renders controls to the user around the errors.
+ * @param root0
+ * @param root0.lintBoxes
+ * @param root0.richText
+ */
+export default function Highlighter({
+	lintBoxes,
+	richText,
+}: {
+	lintBoxes: LintBox[];
+	richText: RichText;
+}) {
 	// Disable browser spellchecking in favor of ours
 	useEffect(() => {
 		richText.getTargetElement().spellcheck = false;
@@ -73,7 +30,7 @@ export default function Highlighter({ richText }: { richText: RichText }) {
 	return (
 		<>
 			{visible &&
-				targetBoxes.map((b, index) => (
+				lintBoxes.map((b, index) => (
 					<SuggestionControl lintBox={b} key={index} />
 				))}
 		</>

@@ -2,7 +2,8 @@ import DataBlock from './DataBlock';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Highlighter from './Highlighter';
-import LintSettingList from './LintSettingList';
+import SidebarTabContainer from './SidebarTabContainer';
+import useLintBoxes from './useLintBoxes';
 
 export default function SidebarControl() {
 	const documentContainer = useMemo<Element>(
@@ -34,22 +35,26 @@ export default function SidebarControl() {
 		[blocks]
 	);
 
+	const lintBoxes = useLintBoxes(richTexts);
+
 	const highlights =
 		documentContainer &&
-		richTexts.map((richText) =>
-			createPortal(
+		richTexts.map((richText, index) => {
+			const boxes = lintBoxes[index] ?? [];
+			return createPortal(
 				<Highlighter
 					richText={richText}
 					key={richText.getTextContent()}
+					lintBoxes={boxes}
 				/>,
 				documentContainer
-			)
-		);
+			);
+		});
 
 	return (
 		<>
 			{highlights}
-			<LintSettingList />
+			<SidebarTabContainer lintBoxes={lintBoxes.flat()} />
 		</>
 	);
 }

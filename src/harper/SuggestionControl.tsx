@@ -2,19 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { isPointInBox, LintBox } from './Box';
 import { SuggestionKind } from 'harper.js';
 import { Button, Popover } from '@wordpress/components';
-
-function suggestionText(
-	kind: SuggestionKind,
-	problemText: string,
-	replacementText: string
-): string {
-	if (kind === SuggestionKind.Remove) {
-		return `Remove "${problemText}"`;
-	} else if (kind === SuggestionKind.Replace) {
-		return `Replace with “${replacementText}”`;
-	}
-	return `Insert "${replacementText}"`;
-}
+import { suggestionText } from './lintUtils';
 
 /**
  * A control for an individual suggestion shown on the screen.

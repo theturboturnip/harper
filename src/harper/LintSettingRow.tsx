@@ -23,7 +23,7 @@ export default function LintSettingRow({
 		linter.toTitleCase(name.replace(/_/g, ' ')).then(setTitle);
 	}, [linter, name]);
 
-	return title ? (
+	return title && description ? (
 		<Animate type={title === null ? undefined : 'slide-in'}>
 			{({ className }) => (
 				<div className={`${className} harper-lint-config-row`}>

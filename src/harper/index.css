@@ -4,6 +4,24 @@
 	padding: 10px;
 }
 
+.harper-lint-card {
+	margin: 4px;
+}
+
+.harper-lint-card h2 {
+	font-weight: bold;
+	font-size: large;
+}
+
+.harper-lint-card button {
+	width: 100%;
+	margin-top: 6px;
+}
+
+.harper-lint-config-cont {
+	overflow-x: hidden;
+}
+
 .harper-lint-config-row {
 	padding: 6px;
 }
