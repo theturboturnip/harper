@@ -7347,10 +7347,10 @@ hard-rejection@^2.1.0:
   resolved "https://registry.yarnpkg.com/hard-rejection/-/hard-rejection-2.1.0.tgz#1c6eda5c1685c63942766d79bb40ae773cecd883"
   integrity sha512-VIZB+ibDhx7ObhAe7OVtoEbuP4h/MuOTHJ+J8h/eBXotJYl0fBgR72xDFCKgIh22OJZIOVNxBMWuhAr10r8HdA==
 
-harper.js@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/harper.js/-/harper.js-0.16.0.tgz#1b51380ddc114b0fe3b7704921a06cbdb3b0054e"
-  integrity sha512-stIZPykCBDFd+Iqlit3RyAQqTMP5Hyr5gx/kef0LcK8DkH6gfBA+pdfRhQkqYhyeDUTSk9SUlAMTxnvjXW/FcQ==
+harper.js@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/harper.js/-/harper.js-0.17.0.tgz#2d94b351ca002c824143b674f7ca3e4b3637f8ec"
+  integrity sha512-y9Xqf01Z2YYeJa2lddMl3gPtp/z5dXFiZHgrSwHvOP5kwniaoHr695IwUG6TgP/8ItOAaNqyzsDX2h3DIXPXEQ==
 
 has-bigints@^1.0.2:
   version "1.1.0"
