@@ -30,6 +30,8 @@ export default class DataBlock {
 						cont.getAttribute('data-wp-block-attribute-key') ??
 						'content';
 
+					console.log(this.getClientId());
+
 					await updateBlockAttributes(this.getClientId(), {
 						[attributeName]: newContent,
 					});
@@ -45,6 +47,25 @@ export default class DataBlock {
 		];
 
 		return targetNodes.map((node) => new DataBlock(node));
+	}
+
+	/** Get all DataBlocks in the document, then remove any that have other DataBlocks as children. */
+	public static getTerminalDataBlocks(): DataBlock[] {
+		const blocks = this.getAllDataBlocks();
+
+		return blocks.filter((block) => {
+			for (const otherBlock of blocks) {
+				if (otherBlock === block) {
+					continue;
+				}
+
+				if (block.targetElement.contains(otherBlock.targetElement)) {
+					return false;
+				}
+			}
+
+			return true;
+		});
 	}
 
 	public static getContainer(): Element {
