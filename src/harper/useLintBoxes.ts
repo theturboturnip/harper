@@ -6,14 +6,18 @@ import { useLinter, useLinterConfig } from './HarperContext';
 
 /**
  * Lint given elements and return the resulting error targets.
+ * Provides a loading state as well.
  * @param richTexts
  */
-export default function useLintBoxes(richTexts: RichText[]): LintBox[][] {
+export default function useLintBoxes(
+	richTexts: RichText[]
+): [LintBox[][], boolean] {
 	const linter = useLinter();
 	const [config] = useLinterConfig();
 
 	const [targetBoxes, setTargetBoxes] = useState<LintBox[][]>([]);
 	const [lints, setLints] = useState<Lint[][]>([]);
+	const [loading, setLoading] = useState(true);
 
 	const updateLints = useCallback(async () => {
 		// We assume that a given index always refers to the same rich text field.
@@ -24,6 +28,7 @@ export default function useLintBoxes(richTexts: RichText[]): LintBox[][] {
 			})
 		);
 
+		setLoading(false);
 		setLints(newLints);
 	}, [richTexts, linter, config]);
 
@@ -75,5 +80,5 @@ export default function useLintBoxes(richTexts: RichText[]): LintBox[][] {
 		};
 	});
 
-	return targetBoxes;
+	return [targetBoxes, loading];
 }

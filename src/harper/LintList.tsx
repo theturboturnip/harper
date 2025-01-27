@@ -1,20 +1,37 @@
 import React from 'react';
 import { LintBox } from './Box';
 import LintListItem from './LintListItem';
-import { Animate } from '@wordpress/components';
+import { Animate, Spinner } from '@wordpress/components';
 
-export default function LintList({ lintBoxes }: { lintBoxes: LintBox[] }) {
+export default function LintList({
+	lintBoxes,
+	loading,
+}: {
+	lintBoxes: LintBox[];
+	loading: boolean;
+}) {
 	if (lintBoxes.length === 0) {
 		return (
 			<div className="harper-solved-cont">
-				<Animate type="slide-in">
+				<Animate type="appear" options={{ origin: 'middle' }}>
 					{({ className }) => (
 						<div className={className ?? ''}>
-							<h2>LGTM 👍</h2>
-							<p>
-								Harper could not find any problems with your
-								work.
-							</p>
+							{loading ? (
+								<Spinner
+									style={{
+										height: 'calc(4px * 20)',
+										width: 'calc(4px * 20)',
+									}}
+								/>
+							) : (
+								<>
+									<h2>LGTM 👍</h2>
+									<p>
+										Harper could not find any problems with
+										your work.
+									</p>
+								</>
+							)}
 						</div>
 					)}
 				</Animate>

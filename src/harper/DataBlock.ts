@@ -30,8 +30,6 @@ export default class DataBlock {
 						cont.getAttribute('data-wp-block-attribute-key') ??
 						'content';
 
-					console.log(this.getClientId());
-
 					await updateBlockAttributes(this.getClientId(), {
 						[attributeName]: newContent,
 					});

@@ -12,7 +12,10 @@ export default function SidebarControl() {
 		[]
 	);
 
-	const [blocks, setBlocks] = useState<DataBlock[]>([]);
+	const [blocks, setBlocks] = useState<DataBlock[]>(
+		DataBlock.getTerminalDataBlocks()
+	);
+
 	const updateBlocks = useCallback(
 		() => setBlocks(DataBlock.getTerminalDataBlocks()),
 		[]
@@ -36,7 +39,7 @@ export default function SidebarControl() {
 		[blocks]
 	);
 
-	const lintBoxes = useLintBoxes(richTexts);
+	const [lintBoxes, loadingLints] = useLintBoxes(richTexts);
 
 	const highlights =
 		documentContainer &&
@@ -55,7 +58,10 @@ export default function SidebarControl() {
 	return (
 		<>
 			{highlights}
-			<SidebarTabContainer lintBoxes={lintBoxes.flat()} />
+			<SidebarTabContainer
+				lintBoxes={lintBoxes.flat()}
+				loading={loadingLints}
+			/>
 		</>
 	);
 }
