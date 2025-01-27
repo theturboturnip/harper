@@ -1,5 +1,11 @@
 import { SuggestionKind } from 'harper.js';
 
+/**
+ * Produce the UI text shown inside suggestion buttons.
+ * @param kind
+ * @param problemText
+ * @param replacementText
+ */
 export function suggestionText(
 	kind: SuggestionKind,
 	problemText: string,
