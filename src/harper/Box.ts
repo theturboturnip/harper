@@ -16,6 +16,10 @@ export type LintBox = Box & {
 	applySuggestion: (sug: Suggestion) => void;
 };
 
+export type IgnorableLintBox = LintBox & {
+	ignoreLint: () => Promise<void>;
+};
+
 export function isPointInBox(point: [number, number], box: Box) {
 	const [x, y] = point;
 

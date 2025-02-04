@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { isPointInBox, LintBox } from './Box';
+import { IgnorableLintBox, isPointInBox, LintBox } from './Box';
 import { SuggestionKind } from 'harper.js';
 import { Button, Popover } from '@wordpress/components';
 import { suggestionText } from './lintUtils';
@@ -10,8 +10,12 @@ import { suggestionText } from './lintUtils';
  * @param root0
  * @param root0.lintBox
  */
-export default function SuggestionControl({ lintBox }: { lintBox: LintBox }) {
-	const { x, y, width, height, lint, applySuggestion } = lintBox;
+export default function SuggestionControl({
+	lintBox,
+}: {
+	lintBox: IgnorableLintBox;
+}) {
+	const { x, y, width, height, lint, applySuggestion, ignoreLint } = lintBox;
 
 	const underlineRef = useRef<HTMLDivElement | null>(null);
 	const popoverRef = useRef<HTMLDivElement | null>(null);
@@ -92,6 +96,10 @@ export default function SuggestionControl({ lintBox }: { lintBox: LintBox }) {
 							)}
 						</Button>
 					))}
+
+					<Button variant="link" onClick={ignoreLint}>
+						Ignore
+					</Button>
 				</Popover>
 			) : (
 				<></>

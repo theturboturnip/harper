@@ -1,4 +1,4 @@
-import { LintConfig, Linter, WorkerLinter } from 'harper.js';
+import { Lint, LintConfig, Linter, WorkerLinter } from 'harper.js';
 import React, {
 	createContext,
 	ReactNode,
@@ -7,15 +7,22 @@ import React, {
 	useState,
 } from 'react';
 
+export type HarperConfig = {
+	lintConfig: LintConfig;
+	ignoredState?: string;
+};
+
 type HarperContextData = {
 	linter: Linter;
-	config: LintConfig;
+	config: HarperConfig;
 };
 
 function createDefaultContextData(): HarperContextData {
 	return {
 		linter: new WorkerLinter(),
-		config: {},
+		config: {
+			lintConfig: {},
+		},
 	};
 }
 
@@ -28,7 +35,7 @@ export function HarperProvider({
 }: {
 	children: ReactNode | ReactNode[];
 }) {
-	const dataReadWrite = useState<HarperContextData>(
+	const dataReadWrite = useState<HarperContextData>(() =>
 		createDefaultContextData()
 	);
 
@@ -42,10 +49,20 @@ export function HarperProvider({
 export function useLinter(): Linter {
 	const [data, setData] = useContext(harperContext);
 	const [config] = useLinterConfig();
+	const [ignoredLintState] = useIgnoredLintState();
 
 	useEffect(() => {
 		data.linter.setLintConfig(config);
 	}, [config, data, setData]);
+
+	useEffect(() => {
+		(async () => {
+			await data.linter.clearIgnoredLints();
+			if (ignoredLintState !== undefined) {
+				await data.linter.importIgnoredLints(ignoredLintState);
+			}
+		})();
+	}, [ignoredLintState, data, setData]);
 
 	return data.linter;
 }
@@ -72,6 +89,15 @@ export function useDefaultLintConfig(): LintConfig {
 	return defaultConfig;
 }
 
+function useConfigKey<T>(key: string): [T, (newV: T) => void] {
+	const [data, setData] = useContext(harperContext);
+
+	return [
+		data.config[key],
+		(v) => setData({ ...data, config: { ...data.config, [key]: v } }),
+	];
+}
+
 /**
  * Get the global linter's configuration, in addition to a callback to modify it.
  * This is the preferred method of modifying the lint configuration in this project, since this will trigger re-renders of
@@ -81,15 +107,34 @@ export function useLinterConfig(): [
 	LintConfig,
 	(newConfig: LintConfig) => void,
 ] {
-	const [data, setData] = useContext(harperContext);
+	const [val, setVal] = useConfigKey('lintConfig');
+	const defaultConfig = useDefaultLintConfig();
 
 	useEffect(() => {
-		(async () => {
-			const config = await data.linter.getLintConfig();
-			const newData = { linter: data.linter, config };
-			setData(newData);
-		})();
-	}, [data.linter, setData]);
+		if (Object.entries(val).length === 0) {
+			setVal(defaultConfig);
+		}
+	}, [val, setVal, defaultConfig]);
 
-	return [data.config, (config) => setData({ ...data, config })];
+	return [val as LintConfig, setVal];
+}
+
+export function useIgnoredLintState(): [
+	string | undefined,
+	(newState: string) => void,
+] {
+	const [val, setVal] = useConfigKey('ignoredState');
+
+	return [val as string, setVal];
+}
+
+/** Grab a callback that can be used to ignore a lint. */
+export function useIgnoreLint(): (lint: Lint) => Promise<void> {
+	const linter = useLinter();
+	const [_, setIgnoredLintState] = useIgnoredLintState();
+
+	return async (lint) => {
+		await linter.ignoreLint(lint);
+		setIgnoredLintState(await linter.exportIgnoredLints());
+	};
 }
