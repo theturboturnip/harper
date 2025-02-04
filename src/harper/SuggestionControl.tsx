@@ -71,6 +71,7 @@ export default function SuggestionControl({
 					width: `${width}px`,
 					height: `${height}px`,
 					pointerEvents: 'none',
+					zIndex: 100,
 				}}
 			></div>
 			{showPopover ? (

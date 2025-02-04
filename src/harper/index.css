@@ -53,37 +53,37 @@
 }
 
 .harper-underline-Spelling {
-  border-bottom: 4px solid #EE4266;
+  border-bottom: 3px solid #EE4266;
 }
 
 .harper-underline-Capitalization {
-  border-bottom: 4px solid #540D6E;
+  border-bottom: 3px solid #540D6E;
 }
 
 .harper-underline-Style {
-  border-bottom: 4px solid #FFD23F;
+  border-bottom: 3px solid #FFD23F;
 }
 
 .harper-underline-Formatting {
-  border-bottom: 4px solid #540D6E;
+  border-bottom: 3px solid #540D6E;
 }
 
 .harper-underline-Repetition {
-  border-bottom: 4px solid #3BCEAC;
+  border-bottom: 3px solid #3BCEAC;
 }
 
 .harper-underline-Enhancement {
-  border-bottom: 4px solid #0EAD69;
+  border-bottom: 3px solid #0EAD69;
 }
 
 .harper-underline-Readability {
-  border-bottom: 4px solid #0EAD69;
+  border-bottom: 3px solid #0EAD69;
 }
 
 .harper-underline-WordChoice {
-  border-bottom: 4px solid #0EAD69;
+  border-bottom: 3px solid #0EAD69;
 }
 
 .harper-underline-Miscellaneous {
-  border-bottom: 4px solid #3BCEAC;
+  border-bottom: 3px solid #3BCEAC;
 }
