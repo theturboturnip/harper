@@ -8,7 +8,7 @@ export default function LintListItem({ box }: { box: LintBox }) {
 		<Card size="small" className="harper-lint-card">
 			<CardBody>
 				<h2 className={`harper-underline-${box.lint.lint_kind()}`}>
-					{box.lint.lint_kind()}
+					{box.lint.lint_kind_pretty()}
 				</h2>
 				<p>{box.lint.message()}</p>
 

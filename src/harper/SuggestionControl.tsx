@@ -81,7 +81,7 @@ export default function SuggestionControl({
 					className="harper-popover"
 				>
 					<h2 className={`harper-underline-${lint.lint_kind()}`}>
-						{lint.lint_kind()}
+						{lint.lint_kind_pretty()}
 					</h2>
 					<p>{lint.message()}</p>
 					{suggestions.map((sug, index) => (
