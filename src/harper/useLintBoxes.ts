@@ -2,12 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { IgnorableLintBox, LintBox } from './Box';
 import RichText from './RichText';
 import { Lint } from 'harper.js';
-import {
-	useIgnoredLintState,
-	useIgnoreLint,
-	useLinter,
-	useLinterConfig,
-} from './HarperContext';
+import { useLinter } from './LinterProvider';
+import useLintConfig from './useLintConfig';
+import useIgnoredLintState, { useIgnoreLint } from './useIgnoredLintState';
 
 /**
  * Lint given elements and return the resulting error targets.
@@ -18,7 +15,7 @@ export default function useLintBoxes(
 	richTexts: RichText[]
 ): [IgnorableLintBox[][], boolean] {
 	const linter = useLinter();
-	const [config] = useLinterConfig();
+	const [config] = useLintConfig();
 	const [ignoreState] = useIgnoredLintState();
 	const ignoreLint = useIgnoreLint();
 
@@ -32,9 +29,14 @@ export default function useLintBoxes(
 		const newLints = await Promise.all(
 			richTexts.map(async (richText) => {
 				const contents = richText.getTextContent();
+
+				await linter.clearIgnoredLints();
+
 				if (ignoreState) {
 					await linter.importIgnoredLints(ignoreState);
 				}
+
+				await linter.setLintConfig(config);
 				return await linter.lint(contents);
 			})
 		);

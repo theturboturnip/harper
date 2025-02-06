@@ -4,7 +4,7 @@ import SidebarControl from './SidebarControl';
 import Logo from './Logo';
 import './index.css';
 import React from 'react';
-import { HarperProvider } from './HarperContext';
+import LinterProvider from './LinterProvider';
 
 function Sidebar() {
 	return (
@@ -13,9 +13,9 @@ function Sidebar() {
 				Harper
 			</PluginSidebarMoreMenuItem>
 			<PluginSidebar name="harper-sidebar" title="Harper" icon={Logo}>
-				<HarperProvider>
+				<LinterProvider>
 					<SidebarControl />
-				</HarperProvider>
+				</LinterProvider>
 			</PluginSidebar>
 		</>
 	);

@@ -1,13 +1,10 @@
 import React, { useEffect } from 'react';
-import {
-	useDefaultLintConfig,
-	useLintDescriptions,
-	useLinterConfig,
-} from './HarperContext';
 import LintSettingRow from './LintSettingRow';
+import useLintConfig, { useDefaultLintConfig } from './useLintConfig';
+import { useLintDescriptions } from './LinterProvider';
 
 export default function LintSettingList() {
-	const [lintConfig, setLintConfig] = useLinterConfig();
+	const [lintConfig, setLintConfig] = useLintConfig();
 	const defaultConfig = useDefaultLintConfig();
 	const descriptions = useLintDescriptions();
 

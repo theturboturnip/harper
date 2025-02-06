@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useLinter } from './HarperContext';
 import { Animate, CheckboxControl } from '@wordpress/components';
+import { useLinter } from './LinterProvider';
 
 export default function LintSettingRow({
 	name,
