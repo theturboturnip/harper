@@ -25,14 +25,11 @@ export default function useLintBoxes(
 
 	const updateLints = useCallback(async () => {
 		await linter.clearIgnoredLints();
-
-		const tasks = [linter.setLintConfig(config)];
+		await linter.setLintConfig(config);
 
 		if (ignoreState) {
-			tasks.push(linter.importIgnoredLints(ignoreState));
+			await linter.importIgnoredLints(ignoreState);
 		}
-
-		await Promise.all(tasks);
 
 		// We assume that a given index always refers to the same rich text field.
 		const newLints = await Promise.all(

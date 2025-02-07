@@ -1,3 +1,4 @@
+import { merge } from 'lodash-es';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { LintConfig } from 'harper.js';
 import { useLinter } from './LinterProvider';
@@ -22,14 +23,19 @@ export default function useLintConfig(): [
 	}, []);
 
 	useEffect(() => {
-		if (lintConfig == null) {
-			setConfig(defaultConfig);
+		if (
+			lintConfig == null ||
+			Object.entries(lintConfig).length <
+				Object.entries(defaultConfig).length
+		) {
+			merge(lintConfig, defaultConfig);
+			setConfig({ ...lintConfig });
 		}
 	}, [defaultConfig, setConfig]);
 
 	const nonNull = useMemo(() => {
 		if (lintConfig == null) {
-			return {};
+			return defaultConfig;
 		}
 		return lintConfig;
 	}, [lintConfig]);
