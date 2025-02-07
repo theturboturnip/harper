@@ -1,8 +1,7 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { LintConfig } from 'harper.js';
 import { useLinter } from './LinterProvider';
-import useToggle from './useToggle';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const KEY = 'lintConfig';
 
@@ -11,19 +10,16 @@ export default function useLintConfig(): [
 	(newState: LintConfig) => void,
 ] {
 	const defaultConfig = useDefaultLintConfig();
-	let lintConfig = useSelect(
+	const lintConfig = useSelect(
 		(select) => select('core/preferences').get('harper-wp', KEY),
 		[]
 	);
 
 	const { set } = useDispatch('core/preferences');
 
-	const setConfig = useCallback(
-		(newValue) => {
-			set('harper-wp', KEY, newValue);
-		},
-		[set]
-	);
+	const setConfig = useCallback((newValue) => {
+		set('harper-wp', KEY, newValue);
+	}, []);
 
 	useEffect(() => {
 		if (lintConfig == null) {
@@ -31,11 +27,14 @@ export default function useLintConfig(): [
 		}
 	}, [defaultConfig, setConfig]);
 
-	if (lintConfig == null) {
-		lintConfig = {};
-	}
+	const nonNull = useMemo(() => {
+		if (lintConfig == null) {
+			return {};
+		}
+		return lintConfig;
+	}, [lintConfig]);
 
-	return [lintConfig, setConfig];
+	return [nonNull, setConfig];
 }
 
 export function useDefaultLintConfig(): LintConfig {

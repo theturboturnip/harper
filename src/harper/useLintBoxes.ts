@@ -24,23 +24,24 @@ export default function useLintBoxes(
 	const [loading, setLoading] = useState(true);
 
 	const updateLints = useCallback(async () => {
+		await linter.clearIgnoredLints();
+
+		const tasks = [linter.setLintConfig(config)];
+
+		if (ignoreState) {
+			tasks.push(linter.importIgnoredLints(ignoreState));
+		}
+
+		await Promise.all(tasks);
+
 		// We assume that a given index always refers to the same rich text field.
-		console.log('Start');
 		const newLints = await Promise.all(
 			richTexts.map(async (richText) => {
 				const contents = richText.getTextContent();
 
-				await linter.clearIgnoredLints();
-
-				if (ignoreState) {
-					await linter.importIgnoredLints(ignoreState);
-				}
-
-				await linter.setLintConfig(config);
 				return await linter.lint(contents);
 			})
 		);
-		console.log('End', newLints.flat().length);
 
 		setLoading(false);
 		setLints(newLints);
@@ -62,7 +63,7 @@ export default function useLintBoxes(
 		return () => {
 			observers.forEach((observer) => observer.disconnect());
 		};
-	}, [richTexts, ignoreState, updateLints]);
+	}, [richTexts, updateLints]);
 
 	// Update the lint boxes each frame.
 	// Probably overkill.

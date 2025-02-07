@@ -1,6 +1,7 @@
 import { Lint } from 'harper.js';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useLinter } from './LinterProvider';
+import { useCallback } from 'react';
 
 const KEY = 'ignoredLints';
 
@@ -15,10 +16,12 @@ export default function useIgnoredLintState(): [
 
 	const { set } = useDispatch('core/preferences');
 
-	return [
-		ignoredLintState,
+	const updateState = useCallback(
 		(newValue: string) => set('harper-wp', KEY, newValue),
-	];
+		[set]
+	);
+
+	return [ignoredLintState, updateState];
 }
 
 /** Get a callback that adds a lint to the global ignored lint state. */
