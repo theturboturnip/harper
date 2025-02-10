@@ -24,8 +24,16 @@ export default function useLintBoxes(
 	const [loading, setLoading] = useState(true);
 
 	const updateLints = useCallback(async () => {
-		await linter.clearIgnoredLints();
-		await linter.setLintConfig(config);
+		if ((await linter.exportIgnoredLints()) !== ignoreState) {
+			await linter.clearIgnoredLints();
+		}
+
+		if (
+			JSON.stringify(await linter.getLintConfig()) !==
+			JSON.stringify(config)
+		) {
+			await linter.setLintConfig(config);
+		}
 
 		if (ignoreState) {
 			await linter.importIgnoredLints(ignoreState);
