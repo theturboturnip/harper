@@ -1,5 +1,5 @@
 import React from 'react';
-import { LintBox } from './Box';
+import { IgnorableLintBox } from './Box';
 import LintListItem from './LintListItem';
 import { Animate, Spinner } from '@wordpress/components';
 
@@ -7,7 +7,7 @@ export default function LintList({
 	lintBoxes,
 	loading,
 }: {
-	lintBoxes: LintBox[];
+	lintBoxes: IgnorableLintBox[];
 	loading: boolean;
 }) {
 	if (lintBoxes.length === 0) {

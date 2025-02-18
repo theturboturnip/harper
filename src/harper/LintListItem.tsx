@@ -1,9 +1,9 @@
 import { Card, Button, CardBody } from '@wordpress/components';
-import { LintBox } from './Box';
+import { IgnorableLintBox } from './Box';
 import React from 'react';
 import { suggestionText } from './lintUtils';
 
-export default function LintListItem({ box }: { box: LintBox }) {
+export default function LintListItem({ box }: { box: IgnorableLintBox }) {
 	return (
 		<Card size="small" className="harper-lint-card">
 			<CardBody>
@@ -25,6 +25,10 @@ export default function LintListItem({ box }: { box: LintBox }) {
 						)}
 					</Button>
 				))}
+
+				<Button variant="link" onClick={box.ignoreLint}>
+					Ignore
+				</Button>
 			</CardBody>
 		</Card>
 	);

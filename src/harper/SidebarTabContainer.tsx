@@ -2,13 +2,13 @@ import React from 'react';
 import LintSettingList from './LintSettingList';
 import { TabPanel } from '@wordpress/components';
 import LintList from './LintList';
-import { LintBox } from './Box';
+import { IgnorableLintBox } from './Box';
 
 export default function SidebarTabContainer({
 	lintBoxes,
 	loading,
 }: {
-	lintBoxes: LintBox[];
+	lintBoxes: IgnorableLintBox[];
 	loading: boolean;
 }) {
 	return (
