@@ -1,3 +1,4 @@
+import usePersonalDictionary from './usePersonalDictionary';
 import { useCallback, useEffect, useState } from 'react';
 import { IgnorableLintBox, LintBox } from './Box';
 import RichText from './RichText';
@@ -17,6 +18,7 @@ export default function useLintBoxes(
 	const linter = useLinter();
 	const [config] = useLintConfig();
 	const [ignoreState] = useIgnoredLintState();
+	const [personalDictionary] = usePersonalDictionary();
 	const ignoreLint = useIgnoreLint();
 
 	const [targetBoxes, setTargetBoxes] = useState<IgnorableLintBox[][]>([]);
@@ -26,6 +28,10 @@ export default function useLintBoxes(
 	const updateLints = useCallback(async () => {
 		if ((await linter.exportIgnoredLints()) !== ignoreState) {
 			await linter.clearIgnoredLints();
+		}
+
+		if (personalDictionary) {
+			await linter.importWords(personalDictionary);
 		}
 
 		if (
@@ -50,7 +56,7 @@ export default function useLintBoxes(
 
 		setLoading(false);
 		setLints(newLints);
-	}, [richTexts, linter, config, ignoreState]);
+	}, [richTexts, linter, config, ignoreState, personalDictionary]);
 
 	useEffect(() => {
 		updateLints();

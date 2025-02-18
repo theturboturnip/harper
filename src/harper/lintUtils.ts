@@ -12,9 +12,9 @@ export function suggestionText(
 	replacementText: string
 ): string {
 	if (kind === SuggestionKind.Remove) {
-		return `Remove "${problemText}"`;
+		return `Remove “${problemText}”`;
 	} else if (kind === SuggestionKind.Replace) {
 		return `Replace with “${replacementText}”`;
 	}
-	return `Insert "${replacementText}"`;
+	return `Insert “${replacementText}”`;
 }

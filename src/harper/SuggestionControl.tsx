@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { IgnorableLintBox, isPointInBox, LintBox } from './Box';
-import { SuggestionKind } from 'harper.js';
+import { IgnorableLintBox, isPointInBox } from './Box';
+import { useAddToDictionary } from './usePersonalDictionary';
 import { Button, Popover } from '@wordpress/components';
 import { suggestionText } from './lintUtils';
 
@@ -16,6 +16,7 @@ export default function SuggestionControl({
 	lintBox: IgnorableLintBox;
 }) {
 	const { x, y, width, height, lint, applySuggestion, ignoreLint } = lintBox;
+	const addToDictionary = useAddToDictionary();
 
 	const underlineRef = useRef<HTMLDivElement | null>(null);
 	const popoverRef = useRef<HTMLDivElement | null>(null);
@@ -97,6 +98,19 @@ export default function SuggestionControl({
 							)}
 						</Button>
 					))}
+
+					{lint.lint_kind() === 'Spelling' ? (
+						<Button
+							onClick={() =>
+								addToDictionary(lint.get_problem_text())
+							}
+							variant="primary"
+						>
+							Add “{lint.get_problem_text()}” to the dictionary
+						</Button>
+					) : (
+						<></>
+					)}
 
 					<Button variant="link" onClick={ignoreLint}>
 						Ignore
