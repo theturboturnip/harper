@@ -44,6 +44,11 @@ enum Args {
         /// If omitted, `harper-cli` will run every rule.
         #[arg(short, long, value_delimiter = ',')]
         only_lint_with: Option<Vec<String>>,
+        /// Exclude specific linter rules.
+        /// If omitted, `harper-cli` will run every rule.
+        /// Applied after `--only-lint-with` if supplied.
+        #[arg(short, long, value_delimiter = ',')]
+        lint_without: Option<Vec<String>>,
         /// Specify the dialect.
         #[arg(short, long, default_value = Dialect::American.to_string())]
         dialect: Dialect,
@@ -134,6 +139,7 @@ fn main() -> anyhow::Result<()> {
             input,
             count,
             only_lint_with,
+            lint_without,
             dialect,
             user_dict_path,
             file_dict_path,
@@ -169,6 +175,12 @@ fn main() -> anyhow::Result<()> {
 
                 for rule in rules {
                     linter.config.set_rule_enabled(rule, true);
+                }
+            }
+
+            if let Some(rules) = lint_without {
+                for rule in rules {
+                    linter.config.set_rule_enabled(rule, false);
                 }
             }
 
