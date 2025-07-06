@@ -17,7 +17,7 @@ use harper_comments::CommentParser;
 use harper_core::linting::{LintGroup, Linter};
 use harper_core::parsers::{Markdown, MarkdownOptions, OrgMode, PlainEnglish};
 use harper_core::{
-    CharStringExt, Dialect, DictWordMetadata, Document, Span, TokenKind, TokenStringExt,
+    CharStringExt, Dialect, Document, Span, TokenKind, TokenStringExt,
     dict_word_metadata_orthography::OrthFlags, remove_overlaps,
 };
 use harper_ink::InkParser;
@@ -873,11 +873,10 @@ fn print_word_derivations(word: &str, annot: &str, dictionary: &impl Dictionary)
 fn load_dict(path: &Path) -> anyhow::Result<MutableDictionary> {
     let str = fs::read_to_string(path)?;
 
-    let mut dict = MutableDictionary::new();
-    dict.extend_words(
-        str.lines()
-            .map(|l| (l.chars().collect::<Vec<_>>(), DictWordMetadata::default())),
-    );
+    let dict = MutableDictionary::from_rune_files(
+        &str,
+        include_str!("../../harper-core/annotations.json"),
+    )?;
 
     Ok(dict)
 }
