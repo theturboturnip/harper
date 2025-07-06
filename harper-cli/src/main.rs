@@ -16,8 +16,8 @@ use harper_comments::CommentParser;
 use harper_core::linting::{LintGroup, Linter};
 use harper_core::parsers::{Markdown, MarkdownOptions, OrgMode, PlainEnglish};
 use harper_core::{
-    CharStringExt, Dialect, Dictionary, Document, FstDictionary, MergedDictionary,
-    MutableDictionary, TokenKind, TokenStringExt, WordId, WordMetadata, remove_overlaps,
+    remove_overlaps, CharStringExt, Dialect, Dictionary, Document, FstDictionary, MergedDictionary,
+    MutableDictionary, TokenKind, TokenStringExt, WordId,
 };
 use harper_literate_haskell::LiterateHaskellParser;
 use harper_pos_utils::{BrillChunker, BrillTagger};
@@ -704,11 +704,8 @@ fn print_word_derivations(word: &str, annot: &str, dictionary: &impl Dictionary)
 fn load_dict(path: &Path) -> anyhow::Result<MutableDictionary> {
     let str = fs::read_to_string(path)?;
 
-    let mut dict = MutableDictionary::new();
-    dict.extend_words(
-        str.lines()
-            .map(|l| (l.chars().collect::<Vec<_>>(), WordMetadata::default())),
-    );
+    let dict =
+        MutableDictionary::from_rune_files(&str, include_str!("../../harper-core/affixes.json"))?;
 
     Ok(dict)
 }
