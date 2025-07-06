@@ -18,7 +18,8 @@ use harper_core::linting::LintGroup;
 use harper_core::parsers::{IsolateEnglish, MarkdownOptions};
 use harper_core::weir::WeirLinter;
 use harper_core::{
-    CharStringExt, Dialect, DictWordMetadata, OrthFlags, Span, TokenKind, TokenStringExt,
+    CharStringExt, Dialect, DictWordMetadata, Document, Span, TokenKind, TokenStringExt,
+    OrthFlags, remove_overlaps,
 };
 #[cfg(feature = "training")]
 use harper_pos_utils::{BrillChunker, BrillTagger, BurnChunkerCpu};
@@ -207,7 +208,7 @@ enum Args {
     /// As long as there's either an open or hyphenated spelling.
     Compounds,
     /// Emit a decompressed, line-separated list of the words in Harper's dictionary
-    /// which occur in more than one lettercase variant.    
+    /// which occur in more than one lettercase variant.
     CaseVariants,
     /// Emit a list of each noun phrase contained within the input
     NominalPhrases {

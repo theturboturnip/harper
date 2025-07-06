@@ -25,15 +25,15 @@ use crate::input::{
     single_input::{SingleInput, SingleInputTrait, StdinInput},
 };
 
-/// Sync version of harper_dictionary_wordlist::load_dict.
+
+/// Sync version of harper-ls/src/dictionary_io@load_dict
 fn load_dict(path: &Path) -> anyhow::Result<MutableDictionary> {
     let str = fs::read_to_string(path)?;
 
-    let mut dict = MutableDictionary::new();
-    dict.extend_words(
-        str.lines()
-            .map(|l| (l.chars().collect::<Vec<_>>(), DictWordMetadata::default())),
-    );
+    let dict = MutableDictionary::from_rune_files(
+        &str,
+        include_str!("../../harper-core/annotations.json"),
+    )?;
 
     Ok(dict)
 }
