@@ -25,7 +25,6 @@ use crate::input::{
     single_input::{SingleInput, SingleInputTrait, StdinInput},
 };
 
-
 /// Sync version of harper-ls/src/dictionary_io@load_dict
 fn load_dict(path: &Path) -> anyhow::Result<MutableDictionary> {
     let str = fs::read_to_string(path)?;
@@ -879,7 +878,8 @@ fn final_report(
             .collect();
 
         // Sort by total count (descending), then by lowercase spelling
-        grouped_vec.sort_by(|a, b| b.2.cmp(&a.2).then_with(|| a.0.cmp(&b.0)));
+        // grouped_vec.sort_by(|a, b| b.2.cmp(&a.2).then_with(|| a.0.cmp(&b.0)));
+        grouped_vec.sort_by(|a, b| a.0.cmp(&b.0));
 
         // Flatten the variants back out, but keep track of the group index for coloring
         let spelling_vec: Vec<(Option<String>, String)> = grouped_vec
