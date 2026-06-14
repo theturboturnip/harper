@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 use anyhow::Context;
 use ariadne::{Color, Fmt, Label, Report, ReportKind, Source};
+use harper_core::{CharStringExt, Span};
 use hashbrown::HashMap;
 use rayon::prelude::*;
 use serde::Serialize;
@@ -18,6 +19,7 @@ use harper_core::{
     spell::{Dictionary, MergedDictionary, MutableDictionary},
     weirpack::Weirpack,
 };
+use yansi::Paint;
 
 use crate::input::{
     AnyInput, InputTrait,
@@ -137,6 +139,20 @@ fn char_index_to_line_col(source: &[char], index: usize) -> (usize, usize) {
     let line = before.iter().filter(|&&c| c == '\n').count() + 1;
     let col = before.iter().rev().take_while(|&&c| c != '\n').count() + 1;
     (line, col)
+}
+
+fn span_to_line(source: &[char], span: Span<char>) -> (&[char], &[char], &[char]) {
+    let pre_span = &source[..span.start.min(source.len())];
+    let post_span = &source[span.end.min(source.len())..];
+    let span = &source[span.start.min(source.len())..span.end.min(source.len())];
+
+    let line_start_delta = pre_span.iter().rev().take_while(|&&c| c != '\n').count();
+    let pre_span = &pre_span[(pre_span.len() - line_start_delta)..];
+
+    let line_end_delta = post_span.iter().take_while(|&&c| c != '\n').count();
+    let post_span = &post_span[..line_end_delta];
+
+    (pre_span, span, post_span)
 }
 
 struct InputInfo<'a> {
@@ -663,12 +679,31 @@ fn single_input_report(
     let FullInputInfo { input, doc, source } = input_info;
     let (lint_count_before, lint_count_after) = lint_count;
 
+    // Report the number of lints no matter what report mode we are in
+    println!(
+        "{}: {}",
+        input.format_path(),
+        match (lint_count_before, lint_count_after) {
+            (0, _) => "No lints found".to_string(),
+            (before, after) if before != after =>
+                format!("{before} lints before overlap removal, {after} after"),
+            (before, _) => format!("{before} lints"),
+        }
+    );
+
     // Compact mode: one line per lint, GCC/grep-style
     if matches!(report_mode, ReportStyle::Compact) {
         let source_chars = doc.get_source();
         for (rule_name, lints) in named_lints {
             for lint in lints {
                 let (line, col) = char_index_to_line_col(source_chars, lint.span.start);
+                let (pre_span, span, post_span) = span_to_line(source_chars, lint.span);
+                println!(
+                    "{}{}{}",
+                    pre_span.to_string().bright_black(),
+                    span.to_string().underline().bold().bright_black(),
+                    post_span.to_string().bright_black()
+                );
                 println!(
                     "{}:{}:{}: {}::{}: {}",
                     input.plain_path(),
@@ -696,18 +731,6 @@ fn single_input_report(
             input.format_path()
         );
     }
-
-    // Report the number of lints no matter what report mode we are in
-    println!(
-        "{}: {}",
-        input.format_path(),
-        match (lint_count_before, lint_count_after) {
-            (0, _) => "No lints found".to_string(),
-            (before, after) if before != after =>
-                format!("{before} lints before overlap removal, {after} after"),
-            (before, _) => format!("{before} lints"),
-        }
-    );
 
     // If we are in Ariadne mode, print the report
     if matches!(report_mode, ReportStyle::FullAriadne) {
