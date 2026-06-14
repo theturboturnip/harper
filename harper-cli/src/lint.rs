@@ -232,6 +232,11 @@ pub fn lint(
     // Create merged dictionary with base dictionary
     let mut curated_plus_user_dict = MergedDictionary::new();
     curated_plus_user_dict.add_dictionary(Arc::new(curated_dictionary));
+    {
+        let mut special_dict = MutableDictionary::new();
+        special_dict.append_word(&['I', '/', 'O'], DictWordMetadata::default());
+        curated_plus_user_dict.add_dictionary(Arc::new(special_dict));
+    }
 
     let user_dict_msg = match load_dict(&user_dict_path) {
         Ok(user_dict) => {
