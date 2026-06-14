@@ -86,6 +86,7 @@ pub enum OutputFormat {
 pub struct LintOptions {
     pub count: bool,
     pub ignore: Option<Vec<String>>,
+    pub include: Option<Vec<String>>,
     pub only: Option<Vec<String>>,
     pub keep_overlapping_lints: bool,
     pub dialect: Dialect,
@@ -187,6 +188,7 @@ pub fn lint(
     let LintOptions {
         count,
         ref mut ignore,
+        ref mut include,
         ref mut only,
         dialect,
         ref weirpack_inputs,
@@ -223,6 +225,16 @@ pub fn lint(
         ignore.retain(|rule| {
             if !config.has_rule(rule) {
                 eprintln!("Warning: Cannot disable unknown rule '{}'.", rule);
+                return false;
+            }
+            true
+        });
+    }
+
+    if let Some(include) = include {
+        include.retain(|rule| {
+            if !config.has_rule(rule) {
+                eprintln!("Warning: Cannot enable unknown rule '{}'.", rule);
                 return false;
             }
             true
@@ -405,6 +417,7 @@ fn lint_one_input(
     let LintOptions {
         count: _,
         ignore,
+        include,
         only,
         keep_overlapping_lints,
         dialect,
@@ -458,7 +471,7 @@ fn lint_one_input(
                 }
 
                 // Turn specified rules on or off
-                configure_lint_group(&mut lint_group, only, ignore);
+                configure_lint_group(&mut lint_group, only, ignore, include);
 
                 // Run the linter, getting back a map of rule name -> lints
                 let mut named_lints = lint_group.organized_lints(&doc);
@@ -549,6 +562,7 @@ fn configure_lint_group(
     lint_group: &mut LintGroup,
     only: &Option<Vec<String>>,
     ignore: &Option<Vec<String>>,
+    include: &Option<Vec<String>>,
 ) {
     if let Some(rules) = only {
         lint_group.set_all_rules_to(Some(false));
@@ -561,6 +575,12 @@ fn configure_lint_group(
         rules
             .iter()
             .for_each(|rule| lint_group.config.set_rule_enabled(rule, false));
+    }
+
+    if let Some(rules) = include {
+        rules
+            .iter()
+            .for_each(|rule| lint_group.config.set_rule_enabled(rule, true));
     }
 
     // Have all rules been disabled somehow?

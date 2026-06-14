@@ -18,8 +18,8 @@ use harper_core::linting::LintGroup;
 use harper_core::parsers::{IsolateEnglish, MarkdownOptions};
 use harper_core::weir::WeirLinter;
 use harper_core::{
-    CharStringExt, Dialect, DictWordMetadata, Document, Span, TokenKind, TokenStringExt,
-    OrthFlags, remove_overlaps,
+    CharStringExt, Dialect, DictWordMetadata, Document, OrthFlags, Span, TokenKind, TokenStringExt,
+    remove_overlaps,
 };
 #[cfg(feature = "training")]
 use harper_pos_utils::{BrillChunker, BrillTagger, BurnChunkerCpu};
@@ -68,6 +68,9 @@ enum Args {
         /// If omitted, `harper-cli` will run every rule.
         #[arg(long, value_delimiter = ',')]
         ignore: Option<Vec<String>>,
+        /// Include a specific set of rules in linting.
+        #[arg(long, value_delimiter = ',')]
+        include: Option<Vec<String>>,
         /// Restrict linting to only a specific set of rules.
         /// If omitted, `harper-cli` will run every rule.
         #[arg(long, value_delimiter = ',')]
@@ -245,6 +248,7 @@ fn main() -> anyhow::Result<()> {
             inputs,
             count,
             ignore,
+            include,
             only,
             keep_overlapping_lints,
             dialect: dialect_str,
@@ -263,6 +267,7 @@ fn main() -> anyhow::Result<()> {
                 LintOptions {
                     count,
                     ignore,
+                    include,
                     only,
                     keep_overlapping_lints,
                     dialect,
